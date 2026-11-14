@@ -1,10 +1,29 @@
 import { NextResponse } from 'next/server';
 
+const RTDB_URL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 'https://ldam-cp-default-rtdb.firebaseio.com';
+
 // In-memory active LED state for the demo
 let currentActiveLed: number | null = null;
 let lastActivatedAt: string | null = null;
 
 export async function GET() {
+  // Attempt to read latest state from Firebase RTDB if available
+  try {
+    const res = await fetch(`${RTDB_URL}/deviceSyncStatus/activeLed.json`, {
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const val = await res.json();
+      if (typeof val === 'number') {
+        currentActiveLed = val;
+      } else if (val === null) {
+        currentActiveLed = null;
+      }
+    }
+  } catch {
+    // Fall back to memory
+  }
+
   return NextResponse.json({
     activeLed: currentActiveLed,
     lastActivatedAt,
@@ -25,6 +44,7 @@ export async function POST(request: Request) {
 
     if (ledId === null || ledId === 0 || ledId === undefined) {
       currentActiveLed = null;
+      lastActivatedAt = null;
     } else {
       const id = Number(ledId);
       if (id >= 1 && id <= 28) {
@@ -33,6 +53,27 @@ export async function POST(request: Request) {
       } else {
         currentActiveLed = null;
       }
+    }
+
+    // Sync to Firebase Realtime Database via REST
+    try {
+      await Promise.all([
+        fetch(`${RTDB_URL}/deviceSyncStatus/activeLed.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(currentActiveLed),
+        }),
+        fetch(`${RTDB_URL}/deviceSyncStatus.json`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            activeLed: currentActiveLed,
+            lastSeen: new Date().toISOString(),
+          }),
+        }),
+      ]);
+    } catch (firebaseErr) {
+      console.error('[API] Error pushing active-led to Firebase:', firebaseErr);
     }
 
     return NextResponse.json({
