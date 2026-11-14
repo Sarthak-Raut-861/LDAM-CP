@@ -37,10 +37,11 @@
 const char* WIFI_SSID     = "Your_WiFi_SSID";
 const char* WIFI_PASSWORD = "Your_WiFi_Password";
 
-// SmartDose API Endpoint (or Firebase RTDB URL)
-const char* SCHEDULE_ENDPOINT   = "http://192.168.1.100:3000/api/esp32/schedule";
-const char* TELEMETRY_ENDPOINT  = "http://192.168.1.100:3000/api/esp32/telemetry";
-const char* ACTIVE_LED_ENDPOINT = "http://192.168.1.100:3000/api/esp32/active-led";
+// Firebase Realtime Database Host & Endpoints
+const char* FIREBASE_HOST       = "ldam-cp-default-rtdb.firebaseio.com";
+const char* SCHEDULE_ENDPOINT   = "https://ldam-cp-default-rtdb.firebaseio.com/weeklySchedule.json";
+const char* ACTIVE_LED_ENDPOINT = "https://ldam-cp-default-rtdb.firebaseio.com/deviceSyncStatus/activeLed.json";
+const char* TELEMETRY_ENDPOINT  = "https://ldam-cp-default-rtdb.firebaseio.com/deviceSyncStatus.json";
 
 // Pin Definitions
 #define PIN_74HC595_DATA   23
