@@ -75,6 +75,7 @@ const unsigned long ALARM_TIMEOUT_MS = 45 * 60 * 1000UL; // 45 minutes timeout
 // Shift 32 bits to 4x 74HC595 shift registers
 void updateShiftRegisters(uint32_t bitmask) {
   digitalWrite(PIN_74HC595_LATCH, LOW);
+  delayMicroseconds(5);
   
   // Shift out 4 bytes (MSB first through all 4 cascaded chips: Register 4 down to Register 1)
   for (int b = 3; b >= 0; b--) {
@@ -82,7 +83,10 @@ void updateShiftRegisters(uint32_t bitmask) {
     shiftOut(PIN_74HC595_DATA, PIN_74HC595_CLOCK, MSBFIRST, byteVal);
   }
   
+  delayMicroseconds(5);
   digitalWrite(PIN_74HC595_LATCH, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(PIN_74HC595_LATCH, LOW);
 }
 
 void turnOffAllLeds() {
@@ -116,10 +120,17 @@ void setup() {
   pinMode(PIN_ACK_BUTTON, INPUT_PULLUP);
   pinMode(PIN_BUZZER, OUTPUT);
 
-  // Self-test: Flash LED #1 for 1 second on boot to verify shift registers
-  Serial.println("[TEST] Hardware Self-Test: Turning ON LED #1 for 1s...");
+  // Self-test Stage 1: Turn ON ALL 28 outputs for 1.5s to test all chips & LEDs
+  Serial.println("[TEST] Hardware Self-Test Stage 1: Lighting ALL 28 LEDs (0xFFFFFFFF)...");
+  updateShiftRegisters(0xFFFFFFFF);
+  digitalWrite(PIN_BUZZER, HIGH);
+  delay(1500);
+
+  // Self-test Stage 2: Turn ON ONLY LED #1 for 1.5s
+  Serial.println("[TEST] Hardware Self-Test Stage 2: Lighting ONLY LED #1 (0x00000001)...");
   activateLed(1);
-  delay(1000);
+  delay(1500);
+
   turnOffAllLeds();
   Serial.println("[TEST] Self-Test complete. All LEDs OFF.");
 
