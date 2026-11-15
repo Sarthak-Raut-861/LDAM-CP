@@ -25,7 +25,8 @@ import {
   Moon,
   Info,
   Layers,
-  Power
+  Power,
+  Sparkles
 } from 'lucide-react';
 import { SlotEditModal } from './SlotEditModal';
 import { CopyDayModal } from './CopyDayModal';
@@ -102,6 +103,15 @@ export const WeeklySchedulePlanner: React.FC = () => {
           </button>
 
           <button
+            onClick={() => toggleSimulatedActiveLed(99)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-amber-400/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 text-xs font-semibold shadow-2xs transition-colors"
+            title="Trigger 7-Day progressive LED test sequence on ESP32 (Monday to Sunday)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            7-Day Sequence
+          </button>
+
+          <button
             onClick={handleSync}
             disabled={isSyncing}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-sm transition-all"
@@ -168,6 +178,22 @@ export const WeeklySchedulePlanner: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const dayIdx = DAYS_OF_WEEK.indexOf(day);
+                      const targetCode = 30 + dayIdx;
+                      toggleSimulatedActiveLed(deviceStatus.activeLed === targetCode ? null : targetCode);
+                    }}
+                    className={`text-[11px] px-2.5 py-1 rounded-lg border font-semibold flex items-center gap-1 transition-all ${
+                      deviceStatus.activeLed === (30 + DAYS_OF_WEEK.indexOf(day))
+                        ? 'bg-rose-500/10 border-rose-500/40 text-rose-500'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    {deviceStatus.activeLed === (30 + DAYS_OF_WEEK.indexOf(day)) ? 'Turn Off' : 'Light All 4'}
+                  </button>
+
                   <button
                     onClick={() => {
                       setCopySourceDay(day);
