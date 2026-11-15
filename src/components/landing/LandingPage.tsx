@@ -19,29 +19,20 @@ import {
 
 export const LandingPage: React.FC = () => {
   return (
-    <div id="overview" className="relative space-y-28 sm:space-y-36 py-12 sm:py-20 overflow-hidden">
+    <div id="overview" className="relative space-y-16 sm:space-y-24 pt-1 sm:pt-2 pb-16 overflow-hidden">
       {/* Ambient Radial Glass Glow Orbs */}
-      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-tr from-teal-500/15 via-emerald-500/10 to-cyan-500/10 blur-[120px] rounded-full pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute top-[600px] -left-36 w-[400px] h-[400px] bg-teal-600/10 blur-[100px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute top-[1200px] -right-36 w-[450px] h-[450px] bg-cyan-600/10 blur-[110px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-tr from-teal-500/15 via-emerald-500/10 to-cyan-500/10 blur-[120px] rounded-full pointer-events-none -z-10 animate-pulse" />
+      <div className="absolute top-[450px] -left-36 w-[400px] h-[400px] bg-teal-600/10 blur-[100px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-[900px] -right-36 w-[450px] h-[450px] bg-cyan-600/10 blur-[110px] rounded-full pointer-events-none -z-10" />
 
-      {/* 1. Hero Section - Clean, High-Impact & Uncluttered */}
-      <section className="relative text-center max-w-3xl mx-auto px-4 space-y-7">
-        {/* Official MediGlow Brand Logo */}
-        <div className="flex justify-center pt-2">
-          <img 
-            src="/mediglow-logo-dark.png" 
-            alt="MediGlow - Your Health, Right on Time." 
-            className="h-28 sm:h-36 w-auto object-contain drop-shadow-[0_8px_32px_rgba(20,184,166,0.3)] hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-
-        {/* Subtle Announcement Pill */}
+      {/* 1. Hero Section - Shifted Upwards & Clean */}
+      <section className="relative text-center max-w-3xl mx-auto px-4 space-y-5 pt-1">
+        {/* Subtle Announcement Pill with Logo Tagline */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-xl border border-white/10 text-xs font-semibold text-slate-300 shadow-sm hover:border-teal-500/40 transition-colors">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-teal-300 font-bold">IoT Dispenser</span>
+          <span className="text-teal-300 font-bold">Your Health, Right on Time.</span>
           <span className="text-slate-500">&bull;</span>
-          <span>ESP32 &bull; DS3231 RTC &bull; 4x 74HC595</span>
+          <span>IoT Dispenser &bull; ESP32 &bull; DS3231 RTC</span>
         </div>
 
         {/* Clean, Punchy Typography */}

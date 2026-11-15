@@ -94,7 +94,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         )}
 
         <div className={`flex-1 flex flex-col transition-all ${isPublicPage || !user ? 'w-full' : 'md:pl-64'}`}>
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          <main className={`flex-1 ${isPublicPage ? 'px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 pb-12' : 'p-4 sm:p-6 lg:p-8'} max-w-7xl w-full mx-auto`}>
             {children}
           </main>
           <Footer />

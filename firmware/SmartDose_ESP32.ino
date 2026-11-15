@@ -1,5 +1,5 @@
 /*
- * SmartDose — ESP32 DevKit V1 Smart Medicine Dispenser Firmware
+ * MediGlow — ESP32 DevKit V1 Smart Medicine Dispenser Firmware
  * -------------------------------------------------------------
  * Hardware Topology (Exact Pins From Your Working Setup):
  * - Shift Registers (4x 74HC595 cascaded):

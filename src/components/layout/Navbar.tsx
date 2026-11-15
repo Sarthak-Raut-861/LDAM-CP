@@ -55,15 +55,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </button>
         )}
 
-        <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5 group">
+        <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-3 group">
           <img 
             src="/mediglow-icon.png" 
             alt="MediGlow Logo" 
-            className="h-8 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_2px_12px_rgba(20,184,166,0.35)]" 
+            className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_2px_14px_rgba(20,184,166,0.4)]" 
           />
-          <span className="font-extrabold text-lg tracking-tight text-white group-hover:text-teal-300 transition-colors">
-            MediGlow
-          </span>
+          <div className="flex flex-col">
+            <span className="font-black text-lg sm:text-xl tracking-tight text-white leading-none">
+              Medi<span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent group-hover:from-teal-300 group-hover:to-cyan-300 transition-colors">Glow</span>
+            </span>
+            <span className="text-[9px] sm:text-[10px] text-teal-300/90 font-medium tracking-wide mt-1 leading-none">
+              Your Health, Right on Time.
+            </span>
+          </div>
         </Link>
 
         {user && (
