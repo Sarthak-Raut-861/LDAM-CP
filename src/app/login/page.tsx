@@ -77,9 +77,11 @@ export default function LoginPage() {
         title: 'Patient Access Granted',
         message: 'Signed in as Robert Vance (Patient #MG-83921)',
       });
-      router.push('/dashboard');
-    } catch {
-      router.push('/dashboard');
+      // Direct reliable navigation ensures session and layout state are fully synchronized
+      window.location.href = '/dashboard';
+    } catch (err) {
+      console.error('Quick login error:', err);
+      window.location.href = '/dashboard';
     } finally {
       setLoading(false);
     }
