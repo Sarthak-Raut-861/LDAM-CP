@@ -116,15 +116,13 @@ export function createDefaultWeeklySchedule(userId: string = 'demo_user_1'): Wee
         instructions = 'Take before breakfast with water.';
         notes = 'Slot 1 of day: LED ' + ledId;
       } else if (slot === 'noon') {
-        // Mon, Wed, Fri, Sun have lunch multivitamins
-        if (day === 'Monday' || day === 'Wednesday' || day === 'Friday' || day === 'Sunday') {
-          enabled = true;
-          medId = 'med_multivitamin';
-          medName = 'CoQ10 & Multivitamin Complex';
-          dosage = '1 Capsule';
-          instructions = 'Take with lunch.';
-          notes = 'LED ' + ledId;
-        }
+        // Daily lunch multivitamins across all 7 days (all 28 slots configured)
+        enabled = true;
+        medId = 'med_multivitamin';
+        medName = 'CoQ10 & Multivitamin Complex';
+        dosage = '1 Capsule';
+        instructions = 'Take with lunch meal.';
+        notes = 'Slot 2 of day: LED ' + ledId;
       } else if (slot === 'evening') {
         // Daily evening Metformin
         enabled = true;

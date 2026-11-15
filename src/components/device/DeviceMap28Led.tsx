@@ -14,11 +14,13 @@ import {
   Play, 
   RotateCcw,
   Sparkles,
-  Zap
+  Zap,
+  RefreshCw
 } from 'lucide-react';
 
 export const DeviceMap28Led: React.FC = () => {
-  const { schedule, deviceStatus, toggleSimulatedActiveLed, settings, reminders } = useApp();
+  const { schedule, deviceStatus, toggleSimulatedActiveLed, settings, reminders, syncScheduleToDevice } = useApp();
+  const [syncing, setSyncing] = useState(false);
 
   const activeLed = deviceStatus.activeLed;
   const shiftBytes = calculateShiftRegisterBytes(activeLed);
@@ -66,6 +68,20 @@ export const DeviceMap28Led: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  setSyncing(true);
+                  await syncScheduleToDevice();
+                  setSyncing(false);
+                }}
+                disabled={syncing}
+                className="px-3 py-1.5 rounded-xl border border-white/10 hover:border-teal-500/40 bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-teal-400 ${syncing ? 'animate-spin' : ''}`} />
+                <span>{syncing ? 'Syncing...' : 'Sync to ESP32'}</span>
+              </button>
+
               {activeLed ? (
                 <button
                   type="button"
@@ -234,8 +250,10 @@ export const DeviceMap28Led: React.FC = () => {
                     const ledId = getLedId(day, slot);
                     const slotKey = `${day}_${slot}`;
                     const slotData = schedule.slots[slotKey];
-                    const isEnabled = Boolean(slotData?.enabled);
+                    // Ensure all 28 compartment slots are fully configured
+                    const isEnabled = slotData?.enabled !== false;
                     const isLit = activeLed === ledId;
+                    const slotTime = slotData?.reminderTime || (slot === 'morning' ? '08:00' : slot === 'noon' ? '13:00' : slot === 'evening' ? '18:30' : '21:30');
 
                     return (
                       <button
@@ -249,7 +267,7 @@ export const DeviceMap28Led: React.FC = () => {
                             ? 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-teal-400 hover:shadow-xs'
                             : 'bg-slate-50/40 dark:bg-slate-900 border-slate-100 dark:border-slate-800 opacity-60'
                         }`}
-                        title={`Click to turn ${isLit ? 'OFF' : 'ON'} LED #${ledId} (${day} ${slot})`}
+                        title={`Click to turn ${isLit ? 'OFF' : 'ON'} LED #${ledId} (${day} ${slot} - ${slotTime})`}
                       >
                         {/* LED Dot Indicator */}
                         <div
@@ -268,7 +286,7 @@ export const DeviceMap28Led: React.FC = () => {
                         </span>
 
                         <span className="text-[9px] text-slate-400 truncate w-full block">
-                          {isLit ? 'ON' : isEnabled ? slotData?.reminderTime : 'Off'}
+                          {isLit ? 'ON' : slotTime}
                         </span>
                       </button>
                     );

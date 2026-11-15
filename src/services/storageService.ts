@@ -22,7 +22,7 @@ import { formatScheduleForEsp32 } from '@/services/esp32Contract';
 
 const KEYS = {
   MEDICINES: 'mediglow_medicines_v1',
-  SCHEDULE: 'mediglow_schedule_v1',
+  SCHEDULE: 'mediglow_schedule_v2',
   REMINDERS: 'mediglow_reminders_v1',
   DEVICE: 'mediglow_device_status_v1',
   SETTINGS: 'mediglow_settings_v1',
@@ -120,7 +120,15 @@ class StorageService {
     try {
       const stored = localStorage.getItem(KEYS.SCHEDULE);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed: WeeklySchedule = JSON.parse(stored);
+        // Ensure all 28 slots are configured
+        const hasUnconfiguredSlots = Object.values(parsed.slots).some(s => !s.enabled);
+        if (hasUnconfiguredSlots) {
+          const fullSched = createDefaultWeeklySchedule();
+          this.saveSchedule(fullSched, false);
+          return fullSched;
+        }
+        return parsed;
       }
       const defaultSched = createDefaultWeeklySchedule();
       this.saveSchedule(defaultSched, false);
