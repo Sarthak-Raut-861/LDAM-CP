@@ -76,21 +76,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-950/90 backdrop-blur-2xl border-r border-white/[0.08] flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Mobile Header Close */}
-        <div className="flex items-center justify-between p-4 md:hidden border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between p-4 md:hidden border-b border-white/[0.08]">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold text-xs">
               MG
             </div>
-            <span className="font-bold text-sm text-slate-800 dark:text-white">MediGlow</span>
+            <span className="font-bold text-sm text-white">MediGlow</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1 rounded-lg text-slate-400 hover:bg-white/10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Sidebar Nav items */}
         <div className="flex-1 px-3 py-6 space-y-1">
-          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Menu
           </div>
 
@@ -111,20 +111,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`group flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'bg-teal-500/15 border border-teal-500/30 text-teal-300 font-semibold shadow-xs'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-teal-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
                   <span>{item.label}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   {item.badge && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10">
                       {item.badge}
                     </span>
                   )}
@@ -136,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   )}
 
                   {item.onlineBadge !== undefined && (
-                    <span className={`w-1.5 h-1.5 rounded-full ${item.onlineBadge ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${item.onlineBadge ? 'bg-emerald-400' : 'bg-rose-500'}`} />
                   )}
                 </div>
               </Link>

@@ -7,7 +7,7 @@ import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
 import { ToastContainer } from '../ui/Toast';
 import { useAuth } from '@/context/AuthContext';
-import { Lock, ShieldAlert, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,13 +28,13 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   // Loading spinner during auth initialization
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-[#030712]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-teal-600 flex items-center justify-center text-white font-black text-base shadow-lg shadow-teal-500/20 animate-pulse">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white font-black text-base shadow-lg shadow-teal-500/25 animate-pulse">
             MG
           </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <Loader2 className="w-4 h-4 animate-spin text-teal-600 dark:text-teal-400" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+            <Loader2 className="w-4 h-4 animate-spin text-teal-400" />
             <span>Verifying MediGlow Access Credentials...</span>
           </div>
         </div>
@@ -45,28 +45,28 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   // If unauthenticated and on a protected route, show clinical security wall
   if (!user && !isPublicPage) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
+      <div className="min-h-screen flex flex-col bg-[#030712] text-slate-100 font-sans">
         <Navbar onToggleSidebar={() => {}} />
         <main className="flex-1 flex items-center justify-center p-4">
-          <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 mx-auto flex items-center justify-center shadow-xs">
+          <div className="w-full max-w-md p-8 rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-white/10 shadow-2xl text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 mx-auto flex items-center justify-center shadow-xs">
               <Lock className="w-7 h-7" />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 inline-block px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20 mb-1">
                 Authorized Personnel Only
               </span>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
+              <h2 className="text-xl font-bold text-white mt-1">
                 MediGlow Sign-In Required
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                 Patient medication plans, 28-LED hardware controls, and adherence logs are protected under clinical compliance standards. Please sign in to view this content.
               </p>
             </div>
             <div className="pt-2">
               <Link
                 href="/login"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md shadow-teal-500/20 transition-all"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-bold text-xs shadow-lg shadow-teal-500/25 transition-all hover:scale-[1.02]"
               >
                 <span>Sign In to Access System</span>
                 <ArrowRight className="w-4 h-4" />
@@ -81,7 +81,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-teal-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#030712] text-slate-100 font-sans selection:bg-teal-500 selection:text-white">
       {/* Top Navigation Bar */}
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 

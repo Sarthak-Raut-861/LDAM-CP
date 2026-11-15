@@ -24,7 +24,6 @@ export default function LoginPage() {
   const { addToast } = useApp();
 
   const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
-  const [role, setRole] = useState<'patient' | 'caregiver'>('patient');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -106,10 +105,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-10 px-4">
-      <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+    <div className="relative min-h-[85vh] flex items-center justify-center py-10 px-4 overflow-hidden">
+      {/* Background ambient glow orb */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+
+      <div className="w-full max-w-md rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
         {/* Top Header Banner */}
-        <div className="p-6 bg-gradient-to-br from-teal-900 via-teal-800 to-slate-900 text-white relative">
+        <div className="p-6 bg-gradient-to-br from-slate-950 via-teal-950/70 to-slate-900 text-white border-b border-white/[0.08] relative">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-xs text-teal-300 hover:text-white mb-3 transition-colors"
@@ -127,16 +129,16 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <h1 className="text-2xl font-black tracking-tight">
+          <h1 className="text-2xl font-black tracking-tight text-white">
             {mode === 'login' ? 'Sign In to Your Portal' : mode === 'signup' ? 'Create Patient Account' : 'Reset Password'}
           </h1>
-          <p className="text-xs text-slate-300 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Resilient High-Security Portal'}
           </p>
         </div>
 
         {/* Authorized Fast Access Credentials */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800">
+        <div className="p-4 bg-white/[0.02] border-b border-white/[0.08]">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
             Authorized Portal Access
           </span>
@@ -146,9 +148,9 @@ export default function LoginPage() {
               type="button"
               onClick={loginAsPatient}
               disabled={loading}
-              className="p-2.5 rounded-xl border border-teal-200 dark:border-teal-800 bg-white dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-slate-700/60 text-left transition-all group"
+              className="p-2.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-teal-500/10 hover:border-teal-500/30 text-left transition-all group"
             >
-              <div className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 font-bold text-xs mb-0.5">
+              <div className="flex items-center gap-1.5 text-teal-400 font-bold text-xs mb-0.5">
                 <HeartPulse className="w-3.5 h-3.5" />
                 <span>Patient Portal</span>
               </div>
@@ -159,9 +161,9 @@ export default function LoginPage() {
               type="button"
               onClick={loginAsDoctor}
               disabled={loading}
-              className="p-2.5 rounded-xl border border-sky-200 dark:border-sky-800 bg-white dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700/60 text-left transition-all group"
+              className="p-2.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-sky-500/10 hover:border-sky-500/30 text-left transition-all group"
             >
-              <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-bold text-xs mb-0.5">
+              <div className="flex items-center gap-1.5 text-sky-400 font-bold text-xs mb-0.5">
                 <Stethoscope className="w-3.5 h-3.5" />
                 <span>Caregiver / MD</span>
               </div>
@@ -171,14 +173,14 @@ export default function LoginPage() {
         </div>
 
         {/* Mode Selector Tabs */}
-        <div className="flex border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-center">
+        <div className="flex border-b border-white/[0.08] text-xs font-bold text-center">
           <button
             type="button"
             onClick={() => setMode('login')}
             className={`flex-1 py-3 transition-colors ${
               mode === 'login'
-                ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400'
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'border-b-2 border-teal-400 text-teal-300'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Sign In
@@ -188,8 +190,8 @@ export default function LoginPage() {
             onClick={() => setMode('signup')}
             className={`flex-1 py-3 transition-colors ${
               mode === 'signup'
-                ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400'
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'border-b-2 border-teal-400 text-teal-300'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Register
@@ -201,8 +203,8 @@ export default function LoginPage() {
           {message && (
             <div className={`p-3 rounded-xl text-xs ${
               message.type === 'success' 
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
-                : 'bg-rose-50 text-rose-800 border border-rose-200'
+                ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30' 
+                : 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
             }`}>
               {message.text}
             </div>
@@ -210,7 +212,7 @@ export default function LoginPage() {
 
           {mode === 'signup' && (
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-slate-300 mb-1">
                 Full Name
               </label>
               <div className="relative">
@@ -221,14 +223,14 @@ export default function LoginPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 />
               </div>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-bold text-slate-300 mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -239,7 +241,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
               />
             </div>
           </div>
@@ -247,14 +249,14 @@ export default function LoginPage() {
           {mode !== 'reset' && (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-bold text-slate-300">
                   Password
                 </label>
                 {mode === 'login' && (
                   <button
                     type="button"
                     onClick={() => setMode('reset')}
-                    className="text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                    className="text-[11px] text-teal-400 hover:underline font-medium"
                   >
                     Forgot password?
                   </button>
@@ -268,12 +270,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -284,7 +286,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-teal-500/20 flex items-center justify-center gap-2 transition-all"
+            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
           >
             {loading ? (
               <span>Authenticating...</span>
@@ -305,8 +307,8 @@ export default function LoginPage() {
         </form>
 
         {/* Security badge footer */}
-        <div className="p-4 bg-slate-50/80 dark:bg-slate-800/20 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 text-[11px]">
-          <ShieldCheck className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+        <div className="p-4 bg-white/[0.02] border-t border-white/[0.08] flex items-center justify-center gap-2 text-slate-400 text-[11px]">
+          <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
           <span>256-Bit Encrypted Healthcare Gateway</span>
         </div>
       </div>
