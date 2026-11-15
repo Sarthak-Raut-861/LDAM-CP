@@ -304,10 +304,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (settings.soundAlerts) {
         soundFx.playAlert();
       }
+      
+      const dayNamesList = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      let title = `ESP32 Demo: LED #${ledId} Turned ON!`;
+      let message = `Shift Register 74HC595 bit shifted & flashing on dispenser.`;
+      
+      if (ledId >= 30 && ledId <= 36) {
+        const dName = dayNamesList[ledId - 30];
+        title = `ESP32 Demo: All 4 LEDs for ${dName} Turned ON!`;
+        message = `All 4 compartment LEDs for ${dName} are now active.`;
+      } else if (ledId === 99) {
+        title = `ESP32 Demo: 7-Day Sequence Running!`;
+        message = `Progressive Monday to Sunday LED test animation triggered.`;
+      }
+
       addToast({
         type: 'warning',
-        title: `ESP32 Demo: LED #${ledId} Turned ON!`,
-        message: `Shift Register 74HC595 bit shifted & flashing on dispenser.`,
+        title,
+        message,
         duration: 3500,
       });
     }

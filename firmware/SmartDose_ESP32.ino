@@ -103,9 +103,11 @@ void allOff() {
 }
 
 void turnOnLED(int ledNumber) {
-  allOff();
-
   if (ledNumber < 1 || ledNumber > NUM_LEDS) return;
+
+  for (int i = 0; i < NUM_IC; i++) {
+    ledData[i] = 0;
+  }
 
   int ic = (ledNumber - 1) / 8;
   int bitPosition = (ledNumber - 1) % 8;
@@ -119,8 +121,11 @@ void turnOnLED(int ledNumber) {
 
 // Turn on all 4 LEDs for a single day (0 = Mon, 1 = Tue ... 6 = Sun)
 void turnOnDay(int dayIndex) {
-  allOff();
   if (dayIndex < 0 || dayIndex > 6) return;
+
+  for (int i = 0; i < NUM_IC; i++) {
+    ledData[i] = 0;
+  }
 
   int ic = dayIndex / 2;                  // 0 for Mon/Tue, 1 for Wed/Thu, 2 for Fri/Sat, 3 for Sun
   bool isUpperHalf = (dayIndex % 2 == 1); // false for Mon, Wed, Fri, Sun; true for Tue, Thu, Sat

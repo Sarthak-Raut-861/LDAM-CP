@@ -47,7 +47,8 @@ export async function POST(request: Request) {
       lastActivatedAt = null;
     } else {
       const id = Number(ledId);
-      if (id >= 1 && id <= 28) {
+      // Valid IDs: 1-28 (individual slots), 30-36 (entire days: 30=Mon ... 36=Sun), 99 (7-day sequence)
+      if ((id >= 1 && id <= 28) || (id >= 30 && id <= 36) || id === 99) {
         currentActiveLed = id;
         lastActivatedAt = new Date().toISOString();
       } else {
