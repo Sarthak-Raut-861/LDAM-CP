@@ -76,7 +76,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <h2 className="text-xl font-black tracking-tight">
-            {mode === 'login' ? 'Patient & Caregiver Sign In' : mode === 'signup' ? 'Create Patient Account' : 'Reset Password'}
+            {mode === 'login' ? 'Sign In to User Portal' : mode === 'signup' ? 'Create User Account' : 'Reset Password'}
           </h2>
           <p className="text-xs text-slate-300 mt-1">
             {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Secure Clinical Portal Gateway'}

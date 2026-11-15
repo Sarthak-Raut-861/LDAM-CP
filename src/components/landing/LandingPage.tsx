@@ -164,7 +164,7 @@ export const LandingPage: React.FC = () => {
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               Sub-second bi-directional synchronization. Web schedule updates automatically push to ESP32 Flash (NVS), 
-              and physical button clicks sync back to caregiver screens.
+              and physical button clicks sync back to the user portal.
             </p>
           </div>
 
@@ -178,7 +178,7 @@ export const LandingPage: React.FC = () => {
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               High-visibility flashing LED on the specific compartment accompanied by audible piezo buzzer chime 
-              ensures elderly or hearing-impaired patients notice medication times.
+              ensures medication times are never missed.
             </p>
           </div>
 
@@ -202,11 +202,11 @@ export const LandingPage: React.FC = () => {
               <HeartPulse className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-base text-white group-hover:text-rose-300 transition-colors mb-2">
-              Caregiver Escalation
+              Missed-Dose Safeguards
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               If an alarm is unacknowledged within 45 minutes, the system logs a missed dose event and triggers 
-              caregiver notification protocols to safeguard patient health.
+              adherence safeguards to protect patient health.
             </p>
           </div>
         </div>
@@ -222,7 +222,7 @@ export const LandingPage: React.FC = () => {
             How MediGlow Operates
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
-            A seamless three-step loop between the caregiver dashboard and physical bedside hardware.
+            A seamless three-step loop between the user portal and physical bedside hardware.
           </p>
         </div>
 
@@ -233,10 +233,10 @@ export const LandingPage: React.FC = () => {
               1
             </div>
             <h4 className="font-bold text-sm text-white mb-2 group-hover:text-teal-300 transition-colors">
-              Caregiver Configures Slots
+              User Configures Schedule
             </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Prescription times and dosages are configured in the weekly planner and synced to Firebase.
+              Medication times and compartment slots are configured in the planner and synced to Firebase.
             </p>
           </div>
 

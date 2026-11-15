@@ -13,7 +13,10 @@ import {
   ShieldCheck, 
   LogOut, 
   Lock, 
-  Layers
+  Layers,
+  ArrowRight,
+  ArrowLeft,
+  User
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -104,18 +107,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               <span>{deviceStatus.isOnline ? 'ESP32 Linked' : 'Offline'}</span>
             </Link>
           </>
+        ) : pathname === '/login' ? (
+          /* Public Header Status for Login View */
+          <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-xl border border-white/10 text-xs text-slate-300 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-bold text-white">User Portal</span>
+            <span className="text-slate-500">•</span>
+            <span className="text-teal-300 font-medium">Single Patient Gateway</span>
+          </div>
         ) : (
-          /* Public Center Nav Links */
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-400">
-            <a href="#overview" className="hover:text-teal-300 transition-colors">
+          /* Public Center Nav Links on Landing Page */
+          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-300">
+            <Link href="/#overview" className="hover:text-teal-300 transition-colors">
               Overview
-            </a>
-            <a href="#architecture" className="hover:text-teal-300 transition-colors">
+            </Link>
+            <Link href="/#architecture" className="hover:text-teal-300 transition-colors">
               Architecture
-            </a>
-            <a href="#workflow" className="hover:text-teal-300 transition-colors">
+            </Link>
+            <Link href="/#workflow" className="hover:text-teal-300 transition-colors">
               Workflow
-            </a>
+            </Link>
           </nav>
         )}
       </div>
@@ -205,13 +216,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               )}
             </div>
           </>
+        ) : pathname === '/login' ? (
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-teal-500/40 text-slate-200 hover:text-white font-semibold text-xs transition-all hover:scale-[1.02] shadow-xs"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-teal-400" />
+            <span>Back to Home</span>
+          </Link>
         ) : (
           <Link
             href="/login"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-500/15 border border-teal-500/30 hover:border-teal-400/50 hover:bg-teal-500/25 text-teal-300 font-bold text-xs shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="group flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-400 hover:from-teal-400 hover:to-emerald-400 text-white font-bold text-xs shadow-md shadow-teal-500/25 hover:shadow-teal-500/40 border border-teal-300/30 transition-all hover:scale-[1.03] active:scale-[0.98]"
           >
-            <Lock className="w-3.5 h-3.5 text-teal-400" />
+            <User className="w-3.5 h-3.5" />
             <span>Sign In</span>
+            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         )}
       </div>

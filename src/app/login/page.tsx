@@ -85,25 +85,6 @@ export default function LoginPage() {
     }
   };
 
-  const loginAsDoctor = async () => {
-    setLoading(true);
-    setEmail('dr.anita.roy@apollo.health');
-    setPassword('DoctorRoy@2026');
-    try {
-      await login('dr.anita.roy@apollo.health', 'DoctorRoy@2026');
-      addToast({
-        type: 'success',
-        title: 'Clinical Caregiver Access',
-        message: 'Signed in as Dr. Anita Roy (Cardiologist, Apollo Health)',
-      });
-      router.push('/dashboard');
-    } catch {
-      router.push('/dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="relative min-h-[85vh] flex items-center justify-center py-10 px-4 overflow-hidden">
       {/* Background ambient glow orb */}
@@ -129,46 +110,51 @@ export default function LoginPage() {
           </div>
 
           <h1 className="text-2xl font-black tracking-tight text-white">
-            {mode === 'login' ? 'Sign In to Your Portal' : mode === 'signup' ? 'Create Patient Account' : 'Reset Password'}
+            {mode === 'login' ? 'Sign In to User Portal' : mode === 'signup' ? 'Create User Account' : 'Reset Password'}
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Resilient High-Security Portal'}
+            Your Health, Right on Time. &bull; Personal Medication System
           </p>
         </div>
 
-        {/* Authorized Fast Access Credentials */}
+        {/* Single User Portal Fast Access */}
         <div className="p-4 bg-white/[0.02] border-b border-white/[0.08]">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-            Authorized Portal Access
-          </span>
-
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={loginAsPatient}
-              disabled={loading}
-              className="p-2.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-teal-500/10 hover:border-teal-500/30 text-left transition-all group"
-            >
-              <div className="flex items-center gap-1.5 text-teal-400 font-bold text-xs mb-0.5">
-                <HeartPulse className="w-3.5 h-3.5" />
-                <span>Patient Portal</span>
-              </div>
-              <p className="text-[10px] text-slate-400 truncate">Robert Vance</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={loginAsDoctor}
-              disabled={loading}
-              className="p-2.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-sky-500/10 hover:border-sky-500/30 text-left transition-all group"
-            >
-              <div className="flex items-center gap-1.5 text-sky-400 font-bold text-xs mb-0.5">
-                <Stethoscope className="w-3.5 h-3.5" />
-                <span>Caregiver / MD</span>
-              </div>
-              <p className="text-[10px] text-slate-400 truncate">Dr. Anita Roy</p>
-            </button>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              Single User Portal
+            </span>
+            <span className="text-[10px] text-teal-400 font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20">
+              Patient Access Only
+            </span>
           </div>
+
+          <button
+            type="button"
+            onClick={loginAsPatient}
+            disabled={loading}
+            className="w-full p-3 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-teal-500/10 hover:border-teal-500/40 text-left transition-all group flex items-center justify-between shadow-xs"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                <HeartPulse className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-bold text-sm group-hover:text-teal-300 transition-colors">
+                    Patient Portal
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300 font-mono">
+                    ID #MG-83921
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5">Robert Vance &bull; patient.care@mediglow.health</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-teal-400 font-bold group-hover:translate-x-1 transition-transform pr-1">
+              <span>Quick Login</span>
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          </button>
         </div>
 
         {/* Mode Selector Tabs */}
@@ -285,19 +271,22 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+            className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 disabled:opacity-50 text-white font-extrabold text-sm shadow-xl shadow-teal-500/25 hover:shadow-teal-500/45 border border-teal-300/30 flex items-center justify-center gap-2.5 transition-all hover:scale-[1.01] active:scale-[0.99] group"
           >
             {loading ? (
-              <span>Authenticating...</span>
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Authenticating User...</span>
+              </span>
             ) : mode === 'login' ? (
               <>
                 <span>Sign In to MediGlow</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </>
             ) : mode === 'signup' ? (
               <>
-                <span>Create Patient Account</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Create User Account</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </>
             ) : (
               <span>Send Reset Instructions</span>
