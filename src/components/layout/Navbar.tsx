@@ -56,17 +56,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         )}
 
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5 group">
-          <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white text-xs font-black shadow-md shadow-teal-500/20 group-hover:scale-105 transition-all">
-              MG
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950 shadow-xs animate-pulse" />
-          </div>
-          <div>
-            <span className="font-extrabold text-base tracking-tight text-white group-hover:text-teal-300 transition-colors">
-              MediGlow
-            </span>
-          </div>
+          <img 
+            src="/mediglow-icon.png" 
+            alt="MediGlow Logo" 
+            className="h-8 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[0_2px_12px_rgba(20,184,166,0.35)]" 
+          />
+          <span className="font-extrabold text-lg tracking-tight text-white group-hover:text-teal-300 transition-colors">
+            MediGlow
+          </span>
         </Link>
 
         {user && (

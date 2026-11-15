@@ -30,9 +30,11 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#030712]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white font-black text-base shadow-lg shadow-teal-500/25 animate-pulse">
-            MG
-          </div>
+          <img 
+            src="/mediglow-logo-dark.png" 
+            alt="MediGlow Logo" 
+            className="h-14 w-auto object-contain drop-shadow-[0_4px_24px_rgba(20,184,166,0.3)] animate-pulse"
+          />
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
             <Loader2 className="w-4 h-4 animate-spin text-teal-400" />
             <span>Verifying MediGlow Access Credentials...</span>

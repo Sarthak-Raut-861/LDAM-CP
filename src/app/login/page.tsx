@@ -120,13 +120,12 @@ export default function LoginPage() {
             <span>Back to Home</span>
           </Link>
 
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-xs font-black shadow-xs">
-              MG
-            </span>
-            <span className="text-xs uppercase font-bold tracking-widest text-teal-300">
-              MediGlow Clinical Cloud
-            </span>
+          <div className="mb-3">
+            <img 
+              src="/mediglow-logo-dark.png" 
+              alt="MediGlow Logo" 
+              className="h-14 w-auto object-contain drop-shadow-md"
+            />
           </div>
 
           <h1 className="text-2xl font-black tracking-tight text-white">

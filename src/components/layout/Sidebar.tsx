@@ -83,9 +83,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Mobile Header Close */}
         <div className="flex items-center justify-between p-4 md:hidden border-b border-white/[0.08]">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold text-xs">
-              MG
-            </div>
+            <img 
+              src="/mediglow-icon.png" 
+              alt="MediGlow Logo" 
+              className="h-7 w-auto object-contain drop-shadow-xs" 
+            />
             <span className="font-bold text-sm text-white">MediGlow</span>
           </div>
           <button

@@ -26,7 +26,16 @@ export const LandingPage: React.FC = () => {
       <div className="absolute top-[1200px] -right-36 w-[450px] h-[450px] bg-cyan-600/10 blur-[110px] rounded-full pointer-events-none -z-10" />
 
       {/* 1. Hero Section - Clean, High-Impact & Uncluttered */}
-      <section className="relative text-center max-w-3xl mx-auto px-4 space-y-8">
+      <section className="relative text-center max-w-3xl mx-auto px-4 space-y-7">
+        {/* Official MediGlow Brand Logo */}
+        <div className="flex justify-center pt-2">
+          <img 
+            src="/mediglow-logo-dark.png" 
+            alt="MediGlow - Your Health, Right on Time." 
+            className="h-28 sm:h-36 w-auto object-contain drop-shadow-[0_8px_32px_rgba(20,184,166,0.3)] hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+
         {/* Subtle Announcement Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-xl border border-white/10 text-xs font-semibold text-slate-300 shadow-sm hover:border-teal-500/40 transition-colors">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
