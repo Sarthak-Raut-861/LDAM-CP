@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { 
-  Home,
   LayoutDashboard, 
   CalendarDays, 
   Pill, 
@@ -25,11 +24,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { deviceStatus, activeRemindersCount } = useApp();
 
   const navItems = [
-    {
-      label: 'Home (Landing)',
-      href: '/',
-      icon: Home,
-    },
     {
       label: 'Dashboard',
       href: '/dashboard',
