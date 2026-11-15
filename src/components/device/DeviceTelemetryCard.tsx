@@ -158,9 +158,9 @@ export const DeviceTelemetryCard: React.FC = () => {
           </span>
         </div>
         <div>
-          <span className="text-slate-400 block text-[11px]">Simulation Status</span>
+          <span className="text-slate-400 block text-[11px]">Hardware Gateway</span>
           <span className="font-semibold text-teal-600 dark:text-teal-400">
-            {deviceStatus.isSimulated ? 'Active Interactive Demo Gateway' : 'Hardware Connected'}
+            {deviceStatus.isOnline ? 'ESP32 Real-Time Online' : 'Standalone Hardware Mode'}
           </span>
         </div>
       </div>

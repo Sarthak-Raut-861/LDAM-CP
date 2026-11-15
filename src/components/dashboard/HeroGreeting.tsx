@@ -68,8 +68,8 @@ export const HeroGreeting: React.FC = () => {
     if (id === 99) {
       return {
         id,
-        label: '7-DAY SEQUENCE RUNNING',
-        subtext: 'Dispenser is running the progressive Monday to Sunday diagnostic animation.',
+        label: 'ALL COMPARTMENTS ACTIVE',
+        subtext: 'Dispenser is running a full hardware illumination test.',
       };
     }
     return null;
@@ -131,7 +131,7 @@ export const HeroGreeting: React.FC = () => {
         )}
       </div>
 
-      {/* ESP32 Interactive Demo Bar */}
+      {/* ESP32 Hardware Status Bar */}
       <div className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
         activeDetails
           ? 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-300 dark:border-rose-700 shadow-glow-red ring-1 ring-rose-400/40'
@@ -146,7 +146,7 @@ export const HeroGreeting: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-900 dark:text-white">
-                ESP32 Hardware Simulation
+                ESP32 Hardware Status
               </span>
               {activeDetails ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500 text-white animate-pulse">
@@ -162,12 +162,12 @@ export const HeroGreeting: React.FC = () => {
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
               {activeDetails
                 ? activeDetails.subtext
-                : 'Click "Turn ON" on any slot below to simulate lighting that dispenser LED.'}
+                : 'Real-time synchronization with 4x 74HC595 shift registers and DS3231 RTC.'}
             </p>
           </div>
         </div>
 
-        {/* Demo action buttons */}
+        {/* Hardware action controls */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
           {activeDetails ? (
             <button

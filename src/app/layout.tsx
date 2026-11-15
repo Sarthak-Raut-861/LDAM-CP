@@ -5,7 +5,7 @@ import { AppProvider } from "@/context/AppContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 export const metadata: Metadata = {
-  title: "SmartDose — Smart Medicine Reminder System | IoT Healthcare Dispenser",
+  title: "MediGlow — Smart Medicine Reminder System | IoT Healthcare Dispenser",
   description: "Production-quality responsive web application for an IoT-based Smart Medicine Dispenser with ESP32 DevKit V1, DS3231 RTC, four 74HC595 shift registers and 28 red LEDs.",
 };
 

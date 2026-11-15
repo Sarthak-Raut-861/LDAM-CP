@@ -156,7 +156,7 @@ export const TodaySlotsCard: React.FC = () => {
                 )}
               </div>
 
-              {/* Action Buttons: Direct "Turn ON LED" Demo Trigger */}
+              {/* Action Buttons: Direct "Turn ON LED" Hardware Trigger */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                 <button
                   type="button"

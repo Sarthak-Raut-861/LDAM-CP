@@ -1,41 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useApp } from '@/context/AppContext';
 import { 
-  Cpu, 
   Layers, 
   Clock, 
   ShieldCheck, 
-  Sparkles, 
   Wifi, 
   Bell, 
   ArrowRight, 
-  Play, 
   CheckCircle2, 
-  Activity, 
-  CalendarDays, 
-  Lock, 
-  Terminal, 
-  Stethoscope, 
   HeartPulse,
-  Power,
-  Zap,
-  Check
+  Lock
 } from 'lucide-react';
 import { DispenserMatrix } from '@/components/dashboard/DispenserMatrix';
 
 export const LandingPage: React.FC = () => {
-  const { deviceStatus, toggleSimulatedActiveLed } = useApp();
-  const [demoTriggered, setDemoTriggered] = useState(false);
-
-  const handleQuickDemo = (ledId: number) => {
-    toggleSimulatedActiveLed(ledId);
-    setDemoTriggered(true);
-    setTimeout(() => setDemoTriggered(false), 3000);
-  };
-
   return (
     <div className="space-y-16 py-6 sm:py-10 animate-in fade-in duration-500">
       {/* 1. Hero Section */}
@@ -72,18 +52,11 @@ export const LandingPage: React.FC = () => {
 
           <Link
             href="/login"
-            className="px-6 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 font-bold text-sm shadow-xs transition-all hover:scale-[1.02]"
+            className="px-6 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 font-bold text-sm shadow-xs flex items-center gap-2 transition-all hover:scale-[1.02]"
           >
-            <span>Sign In / Demo Access</span>
+            <Lock className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+            <span>Sign In to Portal</span>
           </Link>
-
-          <button
-            onClick={() => handleQuickDemo(99)}
-            className="px-5 py-3.5 rounded-2xl border border-amber-400/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-sm flex items-center gap-2 transition-all shadow-xs"
-          >
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>{demoTriggered ? 'Triggering ESP32...' : '✨ Run Live 7-Day Demo'}</span>
-          </button>
         </div>
 
         {/* Live Hardware Banner */}
@@ -105,24 +78,24 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Live Interactive Dispenser Preview on Landing Page */}
+      {/* 2. Live Dispenser Matrix on Landing Page */}
       <section className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-6">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
-            Interactive Hardware Twin
+            Physical Hardware Synchronization
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            Real-Time 28-Compartment Hardware Mirror
+            28-Compartment Medication Dispenser Mirror
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto mt-1">
-            Click any LED button below. Your physical ESP32 dispenser will immediately light that exact compartment.
+            Real-time status of your 7-day 28-compartment medicine organizer. Click any slot to illuminate its LED on the physical ESP32.
           </p>
         </div>
 
         <DispenserMatrix />
       </section>
 
-      {/* 3. Core System Innovations Grid */}
+      {/* 3. Core System Architecture Grid */}
       <section className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-10">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
@@ -220,14 +193,14 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. How It Works (3 Steps) */}
+      {/* 4. Workflow Protocol (3 Steps) */}
       <section className="max-w-5xl mx-auto px-4 py-8">
         <div className="text-center mb-10">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
             Workflow Protocol
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            How SmartDose Operates
+            How MediGlow Operates
           </h2>
         </div>
 
@@ -269,66 +242,6 @@ export const LandingPage: React.FC = () => {
             <p className="text-xs text-slate-500 dark:text-slate-400">
               At dosage time, the exact 74HC595 bit goes HIGH, blinking the compartment LED until acknowledged.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Hardware Topology Specs Table */}
-      <section className="max-w-4xl mx-auto px-4">
-        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center">
-              <Terminal className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-bold text-base text-white">Hardware Pinout &amp; Topology Specifications</h3>
-              <p className="text-xs text-slate-400">ESP32 DevKit V1 $\leftrightarrow$ 4x 74HC595 Cascaded Chain</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-            <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-              <span className="text-teal-400 block text-[10px] font-bold uppercase mb-1">Shift Register Pins</span>
-              <p className="text-slate-200">&bull; DATA (DS / Pin 14) &rarr; <span className="text-teal-300 font-bold">GPIO 19</span></p>
-              <p className="text-slate-200">&bull; CLOCK (SHCP / Pin 11) &rarr; <span className="text-teal-300 font-bold">GPIO 18</span></p>
-              <p className="text-slate-200">&bull; LATCH (STCP / Pin 12) &rarr; <span className="text-teal-300 font-bold">GPIO 23</span></p>
-              <p className="text-slate-400 text-[11px] mt-1">OE &rarr; GND, MR &rarr; 3.3V/5V</p>
-            </div>
-
-            <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-              <span className="text-sky-400 block text-[10px] font-bold uppercase mb-1">Peripherals &amp; Sensors</span>
-              <p className="text-slate-200">&bull; DS3231 SDA &rarr; <span className="text-sky-300 font-bold">GPIO 21</span></p>
-              <p className="text-slate-200">&bull; DS3231 SCL &rarr; <span className="text-sky-300 font-bold">GPIO 22</span></p>
-              <p className="text-slate-200">&bull; Tactile Button &rarr; <span className="text-sky-300 font-bold">GPIO 4</span> (Pull-up)</p>
-              <p className="text-slate-200">&bull; Piezo Buzzer / LED &rarr; <span className="text-sky-300 font-bold">GPIO 2</span></p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Call To Action Footer Banner */}
-      <section className="max-w-4xl mx-auto px-4 text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-teal-600 to-emerald-700 text-white shadow-xl space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Ready to Experience Smart Medication Dispensing?
-          </h2>
-          <p className="text-xs sm:text-sm text-teal-100 max-w-lg mx-auto">
-            Open the patient dashboard to manage 28 weekly compartment slots, trigger physical LED diagnostics, 
-            and review compliance reports.
-          </p>
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/dashboard"
-              className="px-6 py-3 rounded-xl bg-white text-teal-900 font-bold text-xs shadow-md hover:bg-teal-50 transition-all"
-            >
-              Open Patient Dashboard
-            </Link>
-            <Link
-              href="/login"
-              className="px-6 py-3 rounded-xl bg-teal-800/80 hover:bg-teal-800 text-white font-bold text-xs border border-teal-400/40 transition-all"
-            >
-              Sign In to Caregiver Account
-            </Link>
           </div>
         </div>
       </section>

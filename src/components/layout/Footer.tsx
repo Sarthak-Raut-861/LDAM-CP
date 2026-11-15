@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
         </div>
         <div className="flex items-center gap-1.5 text-slate-400">
           <HeartPulse className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-          <span>SmartDose IoT &bull; ESP32 &bull; 4x 74HC595 &bull; DS3231 RTC</span>
+          <span>MediGlow IoT &bull; ESP32 &bull; 4x 74HC595 &bull; DS3231 RTC</span>
         </div>
       </div>
     </footer>

@@ -5,7 +5,6 @@ import { useApp } from '@/context/AppContext';
 import { DAYS_OF_WEEK, SLOT_NAMES, SLOT_LABELS, getLedId, DayOfWeek, SlotName } from '@/types';
 import { formatTimeDisplay, getLedDetails } from '@/lib/utils';
 import { 
-  Sparkles, 
   Power, 
   Layers, 
   Info, 
@@ -58,21 +57,13 @@ export const DispenserMatrix: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          {activeLed ? (
+          {activeLed && (
             <button
               onClick={() => toggleSimulatedActiveLed(null)}
               className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 animate-pulse"
             >
               <Power className="w-3.5 h-3.5" />
               Turn Off All LEDs
-            </button>
-          ) : (
-            <button
-              onClick={() => toggleSimulatedActiveLed(99)}
-              className="px-3 py-1.5 rounded-xl border border-amber-400/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold shadow-2xs flex items-center gap-1.5 transition-all"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              Test 7-Day Sequence
             </button>
           )}
 
@@ -226,3 +217,4 @@ export const DispenserMatrix: React.FC = () => {
     </div>
   );
 };
+

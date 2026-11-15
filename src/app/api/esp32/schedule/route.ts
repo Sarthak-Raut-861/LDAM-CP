@@ -11,7 +11,7 @@ export async function GET() {
     headers: {
       'Cache-Control': 'no-store, max-age=0',
       'Content-Type': 'application/json',
-      'X-SmartDose-Protocol': '1.2.0',
+      'X-MediGlow-Protocol': '1.2.0',
     },
   });
 }

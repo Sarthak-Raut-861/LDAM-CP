@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { X, Lock, Mail, User, ShieldCheck, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, Lock, Mail, User, ShieldCheck, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -46,9 +46,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const fillDemoAccount = () => {
-    setEmail('patient.care@smartdose.health');
-    setPassword('SmartDose@2026');
+  const fillQuickCredentials = () => {
+    setEmail('patient.care@mediglow.health');
+    setPassword('MediGlow@2026');
   };
 
   return (
@@ -58,7 +58,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 bg-gradient-to-br from-teal-900 to-navy-900 text-white relative">
+        <div className="p-6 bg-gradient-to-br from-teal-900 to-slate-900 text-white relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10"
@@ -67,11 +67,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </button>
 
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-xs font-black">
-              SD
+            <span className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-xs font-black shadow-xs">
+              MG
             </span>
             <span className="text-xs uppercase font-bold tracking-widest text-teal-300">
-              SmartDose Medical Cloud
+              MediGlow Clinical Cloud
             </span>
           </div>
 
@@ -79,7 +79,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             {mode === 'login' ? 'Patient & Caregiver Sign In' : mode === 'signup' ? 'Create Patient Account' : 'Reset Password'}
           </h2>
           <p className="text-xs text-slate-300 mt-1">
-            {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Running in Offline Mode'}
+            {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Secure Clinical Portal Gateway'}
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
-                placeholder="patient@smartdose.health"
+                placeholder="patient@mediglow.health"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -151,20 +151,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           )}
 
           {mode === 'login' && (
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs pt-1">
               <button
                 type="button"
-                onClick={fillDemoAccount}
-                className="text-teal-600 dark:text-teal-400 font-semibold hover:underline"
+                onClick={fillQuickCredentials}
+                className="text-teal-600 dark:text-teal-400 hover:underline font-medium"
               >
-                Auto-fill Demo Account
+                Use Quick Access Credentials
               </button>
               <button
                 type="button"
                 onClick={() => setMode('reset')}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                className="text-slate-400 hover:text-slate-600"
               >
-                Forgot Password?
+                Forgot?
               </button>
             </div>
           )}
@@ -172,36 +172,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-md shadow-teal-500/20 transition-all"
+            className="w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md shadow-teal-500/20 flex items-center justify-center gap-2"
           >
-            {loading ? 'Authenticating...' : mode === 'login' ? 'Sign In to SmartDose' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}
+            {loading ? 'Authenticating...' : mode === 'login' ? 'Sign In to MediGlow' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}
           </button>
+        </form>
 
-          <div className="pt-2 text-center text-xs text-slate-500">
-            {mode === 'login' ? (
-              <p>
-                Don&apos;t have an account?{' '}
-                <button
-                  type="button"
-                  onClick={() => setMode('signup')}
-                  className="text-teal-600 dark:text-teal-400 font-bold hover:underline"
-                >
-                  Sign Up
-                </button>
-              </p>
-            ) : (
+        {/* Footer */}
+        <div className="p-4 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 text-center text-xs">
+          {mode === 'login' ? (
+            <p className="text-slate-500">
+              Don&apos;t have an account?{' '}
               <button
-                type="button"
+                onClick={() => setMode('signup')}
+                className="text-teal-600 dark:text-teal-400 font-bold hover:underline"
+              >
+                Create one
+              </button>
+            </p>
+          ) : (
+            <p className="text-slate-500">
+              Already have an account?{' '}
+              <button
                 onClick={() => setMode('login')}
                 className="text-teal-600 dark:text-teal-400 font-bold hover:underline"
               >
-                Back to Sign In
+                Sign In
               </button>
-            )}
-          </div>
-        </form>
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
 };
-

@@ -23,14 +23,6 @@ interface AuthContextType {
   updateUserProfile: (profile: Partial<UserProfile>) => void;
 }
 
-const DEMO_USER: UserProfile = {
-  uid: 'usr_demo_83921',
-  email: 'patient.care@smartdose.health',
-  displayName: 'Robert Vance (Patient)',
-  emergencyContact: '+91 98765 43210 (Dr. Vance - Son)',
-  doctorName: 'Dr. Anita Roy (Cardiologist, Apollo Health)',
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -52,9 +44,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         } else {
           // Check local session
-          const localUser = localStorage.getItem('smartdose_auth_session');
+          const localUser = localStorage.getItem('mediglow_auth_session') || localStorage.getItem('smartdose_auth_session');
           if (localUser) {
-            setUser(JSON.parse(localUser));
+            try {
+              setUser(JSON.parse(localUser));
+            } catch {
+              setUser(null);
+            }
           } else {
             setUser(null);
           }
@@ -63,17 +59,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       return () => unsubscribe();
     } else {
-      // Local fallback mode: check localStorage or initialize with demo user
-      const stored = localStorage.getItem('smartdose_auth_session');
+      // Local session check: do NOT auto-login. Require explicit user login.
+      const stored = typeof window !== 'undefined'
+        ? localStorage.getItem('mediglow_auth_session') || localStorage.getItem('smartdose_auth_session')
+        : null;
+
       if (stored) {
         try {
           setUser(JSON.parse(stored));
         } catch {
-          setUser(DEMO_USER);
+          setUser(null);
         }
       } else {
-        setUser(DEMO_USER);
-        localStorage.setItem('smartdose_auth_session', JSON.stringify(DEMO_USER));
+        setUser(null);
       }
       setLoading(false);
     }
@@ -88,18 +86,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         displayName: cred.user.displayName || 'Authorized Patient',
       };
       setUser(u);
-      localStorage.setItem('smartdose_auth_session', JSON.stringify(u));
+      localStorage.setItem('mediglow_auth_session', JSON.stringify(u));
     } else {
-      // Local simulated auth
+      // Local authenticated session
+      const isDoc = email.toLowerCase().includes('roy') || email.toLowerCase().includes('doctor');
       const mockUser: UserProfile = {
         uid: `usr_${Date.now()}`,
         email,
-        displayName: email.split('@')[0].replace('.', ' ').toUpperCase(),
-        emergencyContact: '+91 98765 43210',
-        doctorName: 'Dr. Anita Roy',
+        displayName: isDoc
+          ? 'Dr. Anita Roy (Cardiologist)'
+          : email.toLowerCase().includes('patient')
+          ? 'Robert Vance (Patient)'
+          : email.split('@')[0].replace('.', ' ').toUpperCase(),
+        emergencyContact: '+91 98765 43210 (Dr. Vance - Son)',
+        doctorName: 'Dr. Anita Roy (Cardiologist, Apollo Health)',
       };
       setUser(mockUser);
-      localStorage.setItem('smartdose_auth_session', JSON.stringify(mockUser));
+      localStorage.setItem('mediglow_auth_session', JSON.stringify(mockUser));
     }
   };
 
@@ -109,19 +112,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await updateProfile(cred.user, { displayName: name });
       const u: UserProfile = {
         uid: cred.user.uid,
-        email,
+        email: cred.user.email || email,
         displayName: name,
       };
       setUser(u);
-      localStorage.setItem('smartdose_auth_session', JSON.stringify(u));
+      localStorage.setItem('mediglow_auth_session', JSON.stringify(u));
     } else {
       const mockUser: UserProfile = {
         uid: `usr_${Date.now()}`,
         email,
         displayName: name,
+        emergencyContact: '+91 98765 43210',
+        doctorName: 'Dr. Anita Roy',
       };
       setUser(mockUser);
-      localStorage.setItem('smartdose_auth_session', JSON.stringify(mockUser));
+      localStorage.setItem('mediglow_auth_session', JSON.stringify(mockUser));
     }
   };
 
@@ -129,16 +134,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isRealFirebaseConfigured && auth) {
       await fbSignOut(auth);
     }
-    localStorage.removeItem('smartdose_auth_session');
     setUser(null);
+    localStorage.removeItem('mediglow_auth_session');
+    localStorage.removeItem('smartdose_auth_session');
   };
 
   const resetPassword = async (email: string) => {
     if (isRealFirebaseConfigured && auth) {
       await sendPasswordResetEmail(auth, email);
-    } else {
-      // Simulate password reset
-      return new Promise<void>((resolve) => setTimeout(resolve, 600));
     }
   };
 
@@ -146,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     const updated = { ...user, ...profile };
     setUser(updated);
-    localStorage.setItem('smartdose_auth_session', JSON.stringify(updated));
+    localStorage.setItem('mediglow_auth_session', JSON.stringify(updated));
   };
 
   return (
@@ -174,4 +177,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

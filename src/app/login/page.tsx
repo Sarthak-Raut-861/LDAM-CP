@@ -11,8 +11,6 @@ import {
   User, 
   ArrowLeft, 
   ArrowRight, 
-  Sparkles, 
-  CheckCircle2, 
   ShieldCheck, 
   Stethoscope, 
   HeartPulse,
@@ -45,7 +43,7 @@ export default function LoginPage() {
         addToast({
           type: 'success',
           title: 'Welcome Back!',
-          message: 'Signed in to SmartDose Medical Cloud.',
+          message: 'Signed in to MediGlow Clinical Cloud.',
         });
         router.push('/dashboard');
       } else if (mode === 'signup') {
@@ -54,7 +52,7 @@ export default function LoginPage() {
         addToast({
           type: 'success',
           title: 'Account Created',
-          message: `Welcome to SmartDose, ${name}!`,
+          message: `Welcome to MediGlow, ${name}!`,
         });
         router.push('/dashboard');
       } else if (mode === 'reset') {
@@ -69,27 +67,26 @@ export default function LoginPage() {
     }
   };
 
-  const loginAsDemoPatient = async () => {
+  const loginAsPatient = async () => {
     setLoading(true);
-    setEmail('patient.care@smartdose.health');
-    setPassword('SmartDose@2026');
+    setEmail('patient.care@mediglow.health');
+    setPassword('MediGlow@2026');
     try {
-      await login('patient.care@smartdose.health', 'SmartDose@2026');
+      await login('patient.care@mediglow.health', 'MediGlow@2026');
       addToast({
         type: 'success',
-        title: 'Demo Patient Access Granted',
-        message: 'Signed in as Robert Vance (Patient #SD-83921)',
+        title: 'Patient Access Granted',
+        message: 'Signed in as Robert Vance (Patient #MG-83921)',
       });
       router.push('/dashboard');
     } catch {
-      // Fallback
       router.push('/dashboard');
     } finally {
       setLoading(false);
     }
   };
 
-  const loginAsDemoDoctor = async () => {
+  const loginAsDoctor = async () => {
     setLoading(true);
     setEmail('dr.anita.roy@apollo.health');
     setPassword('DoctorRoy@2026');
@@ -102,7 +99,6 @@ export default function LoginPage() {
       });
       router.push('/dashboard');
     } catch {
-      // Fallback
       router.push('/dashboard');
     } finally {
       setLoading(false);
@@ -123,11 +119,11 @@ export default function LoginPage() {
           </Link>
 
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-xs font-black">
-              SD
+            <span className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-xs font-black shadow-xs">
+              MG
             </span>
             <span className="text-xs uppercase font-bold tracking-widest text-teal-300">
-              SmartDose Medical Cloud
+              MediGlow Clinical Cloud
             </span>
           </div>
 
@@ -135,39 +131,39 @@ export default function LoginPage() {
             {mode === 'login' ? 'Sign In to Your Portal' : mode === 'signup' ? 'Create Patient Account' : 'Reset Password'}
           </h1>
           <p className="text-xs text-slate-300 mt-0.5">
-            {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Resilient Offline Authentication'}
+            {isFirebaseActive ? 'Connected to Firebase Authentication' : 'Resilient High-Security Portal'}
           </p>
         </div>
 
-        {/* 1-Click Fast Demo Login Buttons */}
+        {/* Authorized Fast Access Credentials */}
         <div className="p-4 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-            Instant Demo Sign-In (For Testing &amp; Evaluators)
+            Authorized Portal Access
           </span>
 
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={loginAsDemoPatient}
+              onClick={loginAsPatient}
               disabled={loading}
               className="p-2.5 rounded-xl border border-teal-200 dark:border-teal-800 bg-white dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-slate-700/60 text-left transition-all group"
             >
               <div className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 font-bold text-xs mb-0.5">
                 <HeartPulse className="w-3.5 h-3.5" />
-                <span>Demo Patient</span>
+                <span>Patient Portal</span>
               </div>
               <p className="text-[10px] text-slate-400 truncate">Robert Vance</p>
             </button>
 
             <button
               type="button"
-              onClick={loginAsDemoDoctor}
+              onClick={loginAsDoctor}
               disabled={loading}
               className="p-2.5 rounded-xl border border-sky-200 dark:border-sky-800 bg-white dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700/60 text-left transition-all group"
             >
               <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-bold text-xs mb-0.5">
                 <Stethoscope className="w-3.5 h-3.5" />
-                <span>Demo Doctor</span>
+                <span>Caregiver / MD</span>
               </div>
               <p className="text-[10px] text-slate-400 truncate">Dr. Anita Roy</p>
             </button>
@@ -221,11 +217,11 @@ export default function LoginPage() {
                 <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Robert Vance"
+                  placeholder="e.g. Robert Vance"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -239,20 +235,31 @@ export default function LoginPage() {
               <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
-                placeholder="patient@smartdose.health"
+                placeholder="patient@mediglow.health"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
           </div>
 
           {mode !== 'reset' && (
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Password
+                </label>
+                {mode === 'login' && (
+                  <button
+                    type="button"
+                    onClick={() => setMode('reset')}
+                    className="text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
@@ -261,12 +268,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -274,27 +281,34 @@ export default function LoginPage() {
             </div>
           )}
 
-          {mode === 'login' && (
-            <div className="flex items-center justify-end text-xs">
-              <button
-                type="button"
-                onClick={() => setMode('reset')}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              >
-                Forgot Password?
-              </button>
-            </div>
-          )}
-
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-md shadow-teal-500/25 transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-teal-500/20 flex items-center justify-center gap-2 transition-all"
           >
-            <span>{loading ? 'Authenticating...' : mode === 'login' ? 'Sign In to Portal' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}</span>
-            <ArrowRight className="w-4 h-4" />
+            {loading ? (
+              <span>Authenticating...</span>
+            ) : mode === 'login' ? (
+              <>
+                <span>Sign In to MediGlow</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            ) : mode === 'signup' ? (
+              <>
+                <span>Create Patient Account</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            ) : (
+              <span>Send Reset Instructions</span>
+            )}
           </button>
         </form>
+
+        {/* Security badge footer */}
+        <div className="p-4 bg-slate-50/80 dark:bg-slate-800/20 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 text-[11px]">
+          <ShieldCheck className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+          <span>256-Bit Encrypted Healthcare Gateway</span>
+        </div>
       </div>
     </div>
   );

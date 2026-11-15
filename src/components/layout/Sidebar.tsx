@@ -84,9 +84,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="flex items-center justify-between p-4 md:hidden border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold text-xs">
-              SD
+              MG
             </div>
-            <span className="font-bold text-sm text-slate-800 dark:text-white">SmartDose</span>
+            <span className="font-bold text-sm text-slate-800 dark:text-white">MediGlow</span>
           </div>
           <button
             onClick={onClose}

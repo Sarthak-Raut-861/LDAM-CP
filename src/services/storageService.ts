@@ -21,12 +21,12 @@ import { ref, set, get, onValue } from 'firebase/database';
 import { formatScheduleForEsp32 } from '@/services/esp32Contract';
 
 const KEYS = {
-  MEDICINES: 'smartdose_medicines_v1',
-  SCHEDULE: 'smartdose_schedule_v1',
-  REMINDERS: 'smartdose_reminders_v1',
-  DEVICE: 'smartdose_device_status_v1',
-  SETTINGS: 'smartdose_settings_v1',
-  PROFILE: 'smartdose_user_profile_v1',
+  MEDICINES: 'mediglow_medicines_v1',
+  SCHEDULE: 'mediglow_schedule_v1',
+  REMINDERS: 'mediglow_reminders_v1',
+  DEVICE: 'mediglow_device_status_v1',
+  SETTINGS: 'mediglow_settings_v1',
+  PROFILE: 'mediglow_user_profile_v1',
 };
 
 class StorageService {

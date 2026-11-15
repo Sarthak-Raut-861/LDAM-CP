@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Cpu, Wifi, WifiOff, Clock, RefreshCw, Layers, ArrowRight, Sparkles, Terminal } from 'lucide-react';
+import { Cpu, Wifi, WifiOff, Clock, RefreshCw, Layers, ArrowRight, Terminal } from 'lucide-react';
 import Link from 'next/link';
 
 export const DeviceQuickStatus: React.FC = () => {
@@ -88,16 +88,7 @@ export const DeviceQuickStatus: React.FC = () => {
         </span>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-        <button
-          onClick={() => toggleSimulatedActiveLed(99)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-400/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold shadow-2xs transition-all"
-          title="Run Monday to Sunday 7-day LED diagnostic sequence on ESP32"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>Test 7-Day Sequence</span>
-        </button>
-
+      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
         <button
           onClick={handleSync}
           disabled={syncing}

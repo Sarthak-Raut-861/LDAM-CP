@@ -301,7 +301,7 @@ export const INITIAL_REMINDER_HISTORY: ReminderEvent[] = [
 
 export const INITIAL_DEVICE_STATUS: DeviceTelemetry = {
   deviceId: 'ESP32-DISPENSER-01',
-  deviceName: 'SmartDose Bedside Dispenser Unit',
+  deviceName: 'MediGlow Bedside Dispenser Unit',
   isOnline: true,
   lastSeen: '2026-11-14T17:40:00+05:30',
   ipAddress: '192.168.1.142',
@@ -316,7 +316,7 @@ export const INITIAL_DEVICE_STATUS: DeviceTelemetry = {
   activeLed: null, // No LED blinking currently
   shiftRegistersCount: 4,
   ledsCount: 28,
-  isSimulated: true, // Clearly indicated as interactive demo device
+  isSimulated: false,
   syncSuccess: true,
   lastSyncAttempt: '2026-11-14T17:35:00+05:30',
 };

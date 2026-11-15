@@ -128,7 +128,7 @@ export const MedicineFormModal: React.FC<MedicineFormModalProps> = ({
           <div className="p-3 rounded-2xl bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 text-teal-900 dark:text-teal-200 text-xs flex items-start gap-2.5">
             <ShieldAlert className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
             <p className="text-[11px] leading-relaxed">
-              Always enter exact formulations according to the prescribing physician&apos;s label. SmartDose does not offer or modify medical prescriptions.
+              Always enter exact formulations according to the prescribing physician&apos;s label. MediGlow does not offer or modify medical prescriptions.
             </p>
           </div>
 

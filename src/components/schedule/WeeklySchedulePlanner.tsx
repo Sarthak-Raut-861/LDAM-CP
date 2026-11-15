@@ -25,8 +25,7 @@ import {
   Moon,
   Info,
   Layers,
-  Power,
-  Sparkles
+  Power
 } from 'lucide-react';
 import { SlotEditModal } from './SlotEditModal';
 import { CopyDayModal } from './CopyDayModal';
@@ -100,15 +99,6 @@ export const WeeklySchedulePlanner: React.FC = () => {
           >
             <SlidersHorizontal className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
             Bulk Configure
-          </button>
-
-          <button
-            onClick={() => toggleSimulatedActiveLed(99)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-amber-400/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 text-xs font-semibold shadow-2xs transition-colors"
-            title="Trigger 7-Day progressive LED test sequence on ESP32 (Monday to Sunday)"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            7-Day Sequence
           </button>
 
           <button
@@ -190,7 +180,7 @@ export const WeeklySchedulePlanner: React.FC = () => {
                         : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    <Layers className="w-3 h-3 text-teal-600 dark:text-teal-400" />
                     {deviceStatus.activeLed === (30 + DAYS_OF_WEEK.indexOf(day)) ? 'Turn Off' : 'Light All 4'}
                   </button>
 

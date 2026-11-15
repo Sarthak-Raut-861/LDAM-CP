@@ -334,16 +334,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       
       const dayNamesList = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      let title = `ESP32 Demo: LED #${ledId} Turned ON!`;
-      let message = `Shift Register 74HC595 bit shifted & flashing on dispenser.`;
+      let title = `Physical Alert: LED #${ledId} Active!`;
+      let message = `Shift Register 74HC595 bit shifted & active on dispenser.`;
       
       if (ledId >= 30 && ledId <= 36) {
         const dName = dayNamesList[ledId - 30];
-        title = `ESP32 Demo: All 4 LEDs for ${dName} Turned ON!`;
+        title = `Physical Alert: All 4 LEDs for ${dName} Active!`;
         message = `All 4 compartment LEDs for ${dName} are now active.`;
-      } else if (ledId === 99) {
-        title = `ESP32 Demo: 7-Day Sequence Running!`;
-        message = `Progressive Monday to Sunday LED test animation triggered.`;
       }
 
       addToast({
@@ -395,8 +392,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSettings(storageService.getSettings());
     addToast({
       type: 'info',
-      title: 'Demo Data Restored',
-      message: 'Standard 7-day 28-LED medical schedule and demo device restored.',
+      title: 'Default Schedule Restored',
+      message: 'Standard 7-day 28-LED medical schedule and device status restored.',
     });
   };
 

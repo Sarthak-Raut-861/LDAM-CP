@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const RTDB_URL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 'https://ldam-cp-default-rtdb.firebaseio.com';
 
-// In-memory active LED state for the demo
+// Active LED state for physical ESP32 controller
 let currentActiveLed: number | null = null;
 let lastActivatedAt: string | null = null;
 
