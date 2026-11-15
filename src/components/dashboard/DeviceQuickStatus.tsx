@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Cpu, Wifi, WifiOff, Clock, RefreshCw, Layers, ArrowRight } from 'lucide-react';
+import { Cpu, Wifi, WifiOff, Clock, RefreshCw, Layers, ArrowRight, Sparkles, Terminal } from 'lucide-react';
 import Link from 'next/link';
 
 export const DeviceQuickStatus: React.FC = () => {
-  const { deviceStatus, schedule, syncScheduleToDevice } = useApp();
+  const { deviceStatus, schedule, syncScheduleToDevice, toggleSimulatedActiveLed } = useApp();
   const [syncing, setSyncing] = useState(false);
 
   const isOutOfSync = schedule.version > deviceStatus.lastSyncedVersion;
@@ -77,13 +77,33 @@ export const DeviceQuickStatus: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+      {/* Pinout info */}
+      <div className="mt-3 py-2 px-3 rounded-xl bg-slate-50/70 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+        <span className="flex items-center gap-1.5 font-mono">
+          <Terminal className="w-3.5 h-3.5 text-teal-600" />
+          <span>DATA: GPIO 19 &bull; CLOCK: GPIO 18 &bull; LATCH: GPIO 23</span>
+        </span>
+        <span className="hidden sm:inline font-mono text-[10px] text-slate-400">
+          RTC I2C: 21, 22 &bull; Button: 4 &bull; Buzzer: 2
+        </span>
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+        <button
+          onClick={() => toggleSimulatedActiveLed(99)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-400/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold shadow-2xs transition-all"
+          title="Run Monday to Sunday 7-day LED diagnostic sequence on ESP32"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span>Test 7-Day Sequence</span>
+        </button>
+
         <button
           onClick={handleSync}
           disabled={syncing}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-2xs transition-all"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-2xs transition-all"
         >
-          <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
           {syncing ? 'Syncing...' : 'Sync Schedule to Device'}
         </button>
       </div>

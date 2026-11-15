@@ -16,6 +16,8 @@ import { storageService } from '@/services/storageService';
 import { formatScheduleForEsp32 } from '@/services/esp32Contract';
 import { soundFx } from '@/lib/audio';
 import { getTodayDayOfWeek } from '@/lib/utils';
+import { database, isRealFirebaseConfigured } from '@/lib/firebase';
+import { ref, onValue } from 'firebase/database';
 
 export interface ToastMessage {
   id: string;
@@ -89,6 +91,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setReminders(storageService.getReminders());
     setDeviceStatus(storageService.getDeviceStatus());
     setSettings(storageService.getSettings());
+  }, []);
+
+  // Bi-directional live Firebase Realtime Database listener
+  useEffect(() => {
+    if (!isRealFirebaseConfigured || !database) return;
+
+    try {
+      const activeLedRef = ref(database, 'deviceSyncStatus/activeLed');
+      const unsubscribe = onValue(activeLedRef, (snapshot) => {
+        const val = snapshot.val();
+        const numericVal = typeof val === 'number' ? val : null;
+        
+        setDeviceStatus((prev) => {
+          if (prev.activeLed === numericVal) return prev;
+          return {
+            ...prev,
+            activeLed: numericVal,
+            lastSeen: new Date().toISOString(),
+          };
+        });
+      });
+
+      return () => unsubscribe();
+    } catch (err) {
+      console.warn('Realtime database subscription note:', err);
+    }
   }, []);
 
   // Sync theme to document body

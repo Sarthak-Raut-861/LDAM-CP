@@ -13,7 +13,8 @@ import {
   Power,
   ExternalLink,
   CheckCircle2,
-  Play
+  Play,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -31,7 +32,7 @@ export const TodaySlotsCard: React.FC = () => {
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 sm:p-6 shadow-xs">
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
         <div>
           <h2 className="text-base font-bold text-slate-900 dark:text-white">
             Today&apos;s Medication Slots &bull; {todayDay}
@@ -41,13 +42,33 @@ export const TodaySlotsCard: React.FC = () => {
           </p>
         </div>
 
-        <Link
-          href="/schedule"
-          className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-semibold flex items-center gap-1"
-        >
-          7-Day Schedule
-          <ExternalLink className="w-3 h-3" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const dayIdx = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(todayDay);
+              const targetCode = 30 + dayIdx;
+              toggleSimulatedActiveLed(deviceStatus.activeLed === targetCode ? null : targetCode);
+            }}
+            className={`text-xs px-3 py-1.5 rounded-xl border font-semibold flex items-center gap-1.5 transition-all ${
+              deviceStatus.activeLed === (30 + ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(todayDay))
+                ? 'bg-rose-500/10 border-rose-500/40 text-rose-500 shadow-2xs'
+                : 'border-amber-400/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 shadow-2xs'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            {deviceStatus.activeLed === (30 + ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(todayDay))
+              ? 'Turn Off All 4'
+              : `Light All 4 (${todayDay.slice(0, 3)})`}
+          </button>
+
+          <Link
+            href="/schedule"
+            className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-semibold flex items-center gap-1"
+          >
+            7-Day Schedule
+            <ExternalLink className="w-3 h-3" />
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mt-5">

@@ -219,41 +219,67 @@ void setup() {
   }
 }
 
+// Hardware Button Acknowledgement: Turns off local LEDs AND clears activeLed in Firebase
+void acknowledgePhysicalAlert() {
+  Serial.printf("[BUTTON] Physical button pressed: Acknowledging active LED #%d\n", activeLedIndex);
+  allOff();
+
+  // Clear cloud state so the 1.5s poll loop doesn't re-trigger
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(secureClient, ACTIVE_LED_ENDPOINT);
+    http.setTimeout(2500);
+    http.addHeader("Content-Type", "application/json");
+    int httpCode = http.PUT("null");
+    Serial.printf("[BUTTON -> FIREBASE] Cleared activeLed to null (HTTP %d)\n", httpCode);
+    http.end();
+
+    HTTPClient httpTel;
+    httpTel.begin(secureClient, TELEMETRY_ENDPOINT);
+    httpTel.setTimeout(2500);
+    httpTel.addHeader("Content-Type", "application/json");
+    httpTel.PATCH("{\"activeLed\":null,\"lastAckSource\":\"hardware_button\"}");
+    httpTel.end();
+  }
+}
+
 void fetchScheduleFromCloud() {
   if (WiFi.status() != WL_CONNECTED) return;
 
   HTTPClient http;
   http.begin(secureClient, SCHEDULE_ENDPOINT);
-  http.setTimeout(4000);
+  http.setTimeout(5000);
   int httpCode = http.GET();
 
   if (httpCode == HTTP_CODE_OK) {
     String payload = http.getString();
-    DynamicJsonDocument doc(8192);
+    DynamicJsonDocument doc(16384);
     DeserializationError error = deserializeJson(doc, payload);
 
     if (!error) {
-      uint32_t cloudVer = doc["scheduleVersion"] | 0;
+      uint32_t cloudVer = doc["scheduleVersion"] | doc["version"] | 0;
       if (cloudVer > currentScheduleVersion) {
         Serial.printf("[SYNC] New schedule detected (v%u -> v%u). Updating flash...\n", currentScheduleVersion, cloudVer);
 
-        JsonArray slots = doc["slots"];
-        int idx = 0;
-        for (JsonObject slot : slots) {
-          if (idx >= 28) break;
-          scheduleTable[idx].ledId = slot["ledId"] | (idx + 1);
-          scheduleTable[idx].dayIndex = slot["dayIndex"] | 0;
-          scheduleTable[idx].slotIndex = slot["slotIndex"] | 0;
-          scheduleTable[idx].enabled = slot["enabled"] | false;
-          scheduleTable[idx].hour = slot["hour"] | 8;
-          scheduleTable[idx].minute = slot["minute"] | 0;
-          idx++;
-        }
+        JsonArray slots = doc["slots"].as<JsonArray>();
+        if (!slots.isNull()) {
+          int idx = 0;
+          for (JsonObject slot : slots) {
+            if (idx >= 28) break;
+            scheduleTable[idx].ledId = slot["ledId"] | (idx + 1);
+            scheduleTable[idx].dayIndex = slot["dayIndex"] | 0;
+            scheduleTable[idx].slotIndex = slot["slotIndex"] | 0;
+            scheduleTable[idx].enabled = slot["enabled"] | false;
+            scheduleTable[idx].hour = slot["hour"] | 8;
+            scheduleTable[idx].minute = slot["minute"] | 0;
+            idx++;
+          }
 
-        currentScheduleVersion = cloudVer;
-        preferences.putUInt("version", currentScheduleVersion);
-        preferences.putString("raw_json", payload);
-        Serial.println("[SYNC] Schedule saved to NVS successfully.");
+          currentScheduleVersion = cloudVer;
+          preferences.putUInt("version", currentScheduleVersion);
+          preferences.putString("raw_json", payload);
+          Serial.printf("[SYNC SUCCESS] Parsed and saved %d slots to NVS Flash memory!\n", idx);
+        }
       }
     }
   }
@@ -342,14 +368,13 @@ void loop() {
     delay(50); // Debounce
     if (digitalRead(PIN_ACK_BUTTON) == LOW) {
       if (activeLedIndex != -1) {
-        Serial.printf("[BUTTON] Acknowledged active LED #%d\n", activeLedIndex);
-        allOff();
+        acknowledgePhysicalAlert();
       } else {
         // When no LED is active, pressing the physical button triggers the 7-day sequence!
         Serial.println("[BUTTON] Manual Test Triggered! Running 7-day LED sequence...");
         runDayByDayStartupTest();
       }
-      delay(300); // Debounce delay
+      delay(400); // Debounce delay
     }
   }
 

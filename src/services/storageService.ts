@@ -18,6 +18,7 @@ import {
 } from '@/lib/defaultData';
 import { database, isRealFirebaseConfigured } from '@/lib/firebase';
 import { ref, set, get, onValue } from 'firebase/database';
+import { formatScheduleForEsp32 } from '@/services/esp32Contract';
 
 const KEYS = {
   MEDICINES: 'smartdose_medicines_v1',
@@ -147,7 +148,9 @@ class StorageService {
       });
 
       if (isRealFirebaseConfigured && database) {
-        set(ref(database, 'weeklySchedule'), updated).catch(console.error);
+        const esp32Payload = formatScheduleForEsp32(updated);
+        set(ref(database, 'weeklySchedule'), esp32Payload).catch(console.error);
+        set(ref(database, 'weeklyScheduleRaw'), updated).catch(console.error);
         set(ref(database, 'deviceSyncStatus/currentCloudVersion'), updated.version).catch(console.error);
       }
 
@@ -358,6 +361,14 @@ class StorageService {
   triggerDeviceScheduleSync(): Promise<DeviceTelemetry> {
     const currentSchedule = this.getSchedule();
     const currentDevice = this.getDeviceStatus();
+
+    // Push normalized ESP32 28-slot payload to Firebase
+    if (isRealFirebaseConfigured && database) {
+      const esp32Payload = formatScheduleForEsp32(currentSchedule);
+      set(ref(database, 'weeklySchedule'), esp32Payload).catch(console.error);
+      set(ref(database, 'weeklyScheduleRaw'), currentSchedule).catch(console.error);
+      set(ref(database, 'deviceSyncStatus/currentCloudVersion'), currentSchedule.version).catch(console.error);
+    }
 
     return new Promise((resolve) => {
       // Simulate network round-trip to ESP32 DevKit V1

@@ -32,14 +32,50 @@ export const HeroGreeting: React.FC = () => {
   const greetingTime = currentHour < 12 ? 'Good morning' : currentHour < 17 ? 'Good afternoon' : 'Good evening';
   const firstName = user?.displayName ? user.displayName.split(' ')[0] : 'Patient';
 
-  // Details if an LED is active
-  const activeDetails = deviceStatus.activeLed 
-    ? {
-        ledId: deviceStatus.activeLed,
-        sr: Math.floor((deviceStatus.activeLed - 1) / 8) + 1,
-        pin: (deviceStatus.activeLed - 1) % 8,
-      }
-    : null;
+  // Calculate countdown to next dose
+  let countdownText = '';
+  if (nextSlot) {
+    let diffMins = nextSlot.totalMins - currentTotalMins;
+    if (diffMins < 0) diffMins += 24 * 60; // Roll over to tomorrow
+    const diffHours = Math.floor(diffMins / 60);
+    const remMins = diffMins % 60;
+    if (diffHours > 0) {
+      countdownText = `in ${diffHours}h ${remMins}m`;
+    } else {
+      countdownText = `in ${remMins}m`;
+    }
+  }
+
+  // Details if an LED or day sequence is active
+  const getActiveLedInfo = (id: number | null) => {
+    if (!id) return null;
+    if (id >= 1 && id <= 28) {
+      return {
+        id,
+        label: `LED #${id} ACTIVE`,
+        subtext: `Shift Register IC #${Math.floor((id - 1) / 8) + 1}, Pin Q${(id - 1) % 8} (Output Channel ${id})`,
+      };
+    }
+    if (id >= 30 && id <= 36) {
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const dName = days[id - 30];
+      return {
+        id,
+        label: `${dName.toUpperCase()} ALL 4 LEDs ACTIVE`,
+        subtext: `Morning, Noon, Evening, & Night compartments for ${dName} are illuminated.`,
+      };
+    }
+    if (id === 99) {
+      return {
+        id,
+        label: '7-DAY SEQUENCE RUNNING',
+        subtext: 'Dispenser is running the progressive Monday to Sunday diagnostic animation.',
+      };
+    }
+    return null;
+  };
+
+  const activeDetails = getActiveLedInfo(deviceStatus.activeLed);
 
   return (
     <div className="space-y-4">
@@ -72,9 +108,16 @@ export const HeroGreeting: React.FC = () => {
               #{nextSlot.ledId}
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 font-medium block">
-                Next: {nextSlot.dayOfWeek} {nextSlot.slot}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-slate-400 font-medium">
+                  Next: {nextSlot.dayOfWeek} {nextSlot.slot}
+                </span>
+                {countdownText && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-teal-100 dark:bg-teal-900/60 text-teal-700 dark:text-teal-300">
+                    {countdownText}
+                  </span>
+                )}
+              </div>
               <span className="font-bold text-slate-900 dark:text-white">
                 {nextSlot.medicineName} ({formatTimeDisplay(nextSlot.reminderTime, settings.timeFormat)})
               </span>
@@ -107,18 +150,18 @@ export const HeroGreeting: React.FC = () => {
               </span>
               {activeDetails ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500 text-white animate-pulse">
-                  LED #{activeDetails.ledId} ACTIVE
+                  {activeDetails.label}
                 </span>
               ) : (
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
-                  Ready
+                  Ready &bull; Shift Registers Idle
                 </span>
               )}
             </div>
 
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
               {activeDetails
-                ? `Physical Output: Shift Register #${activeDetails.sr}, Bit Q${activeDetails.pin} is HIGH.`
+                ? activeDetails.subtext
                 : 'Click "Turn ON" on any slot below to simulate lighting that dispenser LED.'}
             </p>
           </div>
@@ -132,7 +175,7 @@ export const HeroGreeting: React.FC = () => {
               className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold shadow-xs hover:opacity-90 flex items-center gap-1.5"
             >
               <Power className="w-3.5 h-3.5" />
-              Turn Off LED #{activeDetails.ledId}
+              Turn Off
             </button>
           ) : (
             <div className="flex items-center gap-1.5 text-xs">
