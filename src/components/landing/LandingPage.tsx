@@ -13,7 +13,6 @@ import {
   HeartPulse,
   Lock
 } from 'lucide-react';
-import { DispenserMatrix } from '@/components/dashboard/DispenserMatrix';
 
 export const LandingPage: React.FC = () => {
   return (
@@ -78,24 +77,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Live Dispenser Matrix on Landing Page */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-6">
-          <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
-            Physical Hardware Synchronization
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            28-Compartment Medication Dispenser Mirror
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto mt-1">
-            Real-time status of your 7-day 28-compartment medicine organizer. Click any slot to illuminate its LED on the physical ESP32.
-          </p>
-        </div>
-
-        <DispenserMatrix />
-      </section>
-
-      {/* 3. Core System Architecture Grid */}
+      {/* 2. Core System Architecture Grid */}
       <section className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-10">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
@@ -193,7 +175,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. Workflow Protocol (3 Steps) */}
+      {/* 3. Workflow Protocol (3 Steps) */}
       <section className="max-w-5xl mx-auto px-4 py-8">
         <div className="text-center mb-10">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">

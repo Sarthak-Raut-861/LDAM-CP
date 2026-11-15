@@ -100,8 +100,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
       {/* Center Section: Telemetry & Active Status */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Active LED Physical Alert Pill */}
-        {deviceStatus.activeLed ? (
+        {/* Active LED Physical Alert Pill (Shown when authenticated) */}
+        {user && deviceStatus.activeLed ? (
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 animate-pulse shadow-sm">
             <span className="w-2 h-2 rounded-full bg-rose-500 shadow-glow-red" />
             <span>LED #{deviceStatus.activeLed} ACTIVE</span>
