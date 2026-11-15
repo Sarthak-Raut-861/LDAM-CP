@@ -49,6 +49,7 @@ const char* WIFI_PASSWORD = "qwertyuiop";
 const char* FIREBASE_HOST       = "ldam-cp-default-rtdb.firebaseio.com";
 const char* SCHEDULE_ENDPOINT   = "https://ldam-cp-default-rtdb.firebaseio.com/weeklySchedule.json";
 const char* ACTIVE_LED_ENDPOINT = "https://ldam-cp-default-rtdb.firebaseio.com/deviceSyncStatus/activeLed.json";
+const char* TELEMETRY_ENDPOINT  = "https://ldam-cp-default-rtdb.firebaseio.com/deviceSyncStatus.json";
 
 RTC_DS3231 rtc;
 Preferences preferences;
