@@ -86,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       <div className="flex items-center gap-4">
         {user ? (
           <>
-            {deviceStatus.activeLed && (
+            {Boolean(deviceStatus.activeLed) && (
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-xs font-bold text-rose-300 animate-pulse shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-rose-500 shadow-glow-red" />
                 <span>LED #{deviceStatus.activeLed} ACTIVE</span>
