@@ -9,12 +9,11 @@ import {
   RefreshCw, 
   Bell, 
   Cpu, 
-  Menu,
+  Menu, 
   ShieldCheck, 
-  LogOut,
-  Lock,
-  Layers,
-  Sparkles
+  LogOut, 
+  Lock, 
+  Layers
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -43,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 bg-slate-950/75 backdrop-blur-2xl border-b border-white/[0.08] shadow-lg shadow-black/20 transition-all">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 bg-slate-950/80 backdrop-blur-2xl border-b border-white/[0.08] shadow-sm transition-all">
       {/* Brand & Left Navigation */}
       <div className="flex items-center gap-3">
         {user && onToggleSidebar && (
@@ -58,20 +57,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5 group">
           <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-600 via-teal-500 to-emerald-400 flex items-center justify-center text-white text-xs font-black shadow-md shadow-teal-500/25 group-hover:scale-105 group-hover:shadow-teal-400/40 transition-all">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white text-xs font-black shadow-md shadow-teal-500/20 group-hover:scale-105 transition-all">
               MG
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950 shadow-xs animate-pulse" />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-white group-hover:text-teal-300 transition-colors">
-                MediGlow
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400 font-medium hidden sm:block leading-none">
-              IoT Healthcare Dispenser
-            </p>
+            <span className="font-extrabold text-base tracking-tight text-white group-hover:text-teal-300 transition-colors">
+              MediGlow
+            </span>
           </div>
         </Link>
 
@@ -83,30 +77,44 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         )}
       </div>
 
-      {/* Center Section: Active Alert (Only if Authenticated) */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {user && deviceStatus.activeLed && (
-          <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-xs font-bold text-rose-300 animate-pulse shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-glow-red" />
-            <span>LED #{deviceStatus.activeLed} ACTIVE</span>
-            <button
-              onClick={() => toggleSimulatedActiveLed(null)}
-              className="ml-1 px-2 py-0.5 rounded-md bg-rose-900/80 text-rose-100 hover:bg-rose-800 text-[10px] font-semibold transition-colors"
-              title="Acknowledge and turn off active LED"
-            >
-              Turn Off
-            </button>
-          </div>
-        )}
+      {/* Center Section */}
+      <div className="flex items-center gap-4">
+        {user ? (
+          <>
+            {deviceStatus.activeLed && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-xs font-bold text-rose-300 animate-pulse shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-rose-500 shadow-glow-red" />
+                <span>LED #{deviceStatus.activeLed} ACTIVE</span>
+                <button
+                  onClick={() => toggleSimulatedActiveLed(null)}
+                  className="ml-1 px-2 py-0.5 rounded-md bg-rose-900/80 text-rose-100 hover:bg-rose-800 text-[10px] font-semibold transition-colors"
+                >
+                  Turn Off
+                </button>
+              </div>
+            )}
 
-        {user && (
-          <Link 
-            href="/device"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border bg-white/5 border-white/10 text-slate-300 hover:border-teal-500/50 hover:bg-white/10 transition-colors"
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${deviceStatus.isOnline ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-            <span>{deviceStatus.isOnline ? 'ESP32 Linked' : 'Offline Mode'}</span>
-          </Link>
+            <Link 
+              href="/device"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border bg-white/5 border-white/10 text-slate-300 hover:border-teal-500/50 hover:bg-white/10 transition-colors"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${deviceStatus.isOnline ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+              <span>{deviceStatus.isOnline ? 'ESP32 Linked' : 'Offline'}</span>
+            </Link>
+          </>
+        ) : (
+          /* Public Center Nav Links */
+          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-400">
+            <a href="#overview" className="hover:text-teal-300 transition-colors">
+              Overview
+            </a>
+            <a href="#architecture" className="hover:text-teal-300 transition-colors">
+              Architecture
+            </a>
+            <a href="#workflow" className="hover:text-teal-300 transition-colors">
+              Workflow
+            </a>
+          </nav>
         )}
       </div>
 
@@ -114,7 +122,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       <div className="flex items-center gap-2">
         {user ? (
           <>
-            {/* Sync Button */}
             <button
               onClick={handleSync}
               disabled={isSyncing}
@@ -123,7 +130,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                   ? 'bg-teal-500 text-white shadow-md shadow-teal-500/25 hover:bg-teal-400' 
                   : 'text-slate-300 hover:bg-white/5 border border-white/10'
               }`}
-              title="Sync Schedule with ESP32 Flash"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">
@@ -131,11 +137,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               </span>
             </button>
 
-            {/* Notifications Bell */}
             <Link
               href="/reminders"
               className="relative p-2 rounded-xl text-slate-300 hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors"
-              title="Reminders &amp; Alerts"
             >
               <Bell className="w-4 h-4" />
               {activeRemindersCount > 0 && (
@@ -143,7 +147,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               )}
             </Link>
 
-            {/* User Profile Dropdown */}
             <div className="relative ml-1">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
@@ -156,7 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
               {profileDropdownOpen && (
                 <div 
-                  className="absolute right-0 mt-2 w-60 rounded-2xl bg-slate-900/90 backdrop-blur-2xl border border-white/10 shadow-2xl py-2 z-50 text-xs animate-in fade-in zoom-in-95 duration-150"
+                  className="absolute right-0 mt-2 w-60 rounded-2xl bg-slate-900/95 backdrop-blur-2xl border border-white/10 shadow-2xl py-2 z-50 text-xs animate-in fade-in zoom-in-95 duration-150"
                   onMouseLeave={() => setProfileDropdownOpen(false)}
                 >
                   <div className="px-4 py-2.5 border-b border-white/10">
@@ -201,12 +204,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             </div>
           </>
         ) : (
-          /* Public Unauthenticated State */
           <Link
             href="/login"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-bold text-xs shadow-lg shadow-teal-500/25 hover:shadow-teal-400/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-500/15 border border-teal-500/30 hover:border-teal-400/50 hover:bg-teal-500/25 text-teal-300 font-bold text-xs shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Lock className="w-3.5 h-3.5" />
+            <Lock className="w-3.5 h-3.5 text-teal-400" />
             <span>Sign In</span>
           </Link>
         )}
