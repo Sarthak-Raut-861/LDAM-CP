@@ -1,30 +1,25 @@
 /*
  * SmartDose — ESP32 DevKit V1 Smart Medicine Dispenser Firmware
  * -------------------------------------------------------------
- * Hardware Topology:
- * - MCU: ESP32 DevKit V1
- * - RTC: DS3231 I2C Real-Time Clock (SDA = GPIO 21, SCL = GPIO 22)
- * - Shift Registers: 4x 74HC595 cascaded (32 output pins, 28 LEDs used)
- *   * DATA_PIN (DS / Pin 14)  = GPIO 23
- *   * CLOCK_PIN (SHCP / Pin 11)= GPIO 18
- *   * LATCH_PIN (STCP / Pin 12)= GPIO 5
- *   * OE (Pin 13) -> MUST CONNECT TO GND
- *   * MR/SRCLR (Pin 10) -> MUST CONNECT TO 3.3V or 5V
- * - Tactile Button = GPIO 4 (INPUT_PULLUP)
- * - Buzzer / Status LED = GPIO 2 (Also ESP32 onboard Blue LED)
+ * Hardware Topology (Exact Pins From Your Working Setup):
+ * - Shift Registers (4x 74HC595 cascaded):
+ *   * DATA_PIN  = GPIO 19
+ *   * CLOCK_PIN = GPIO 18
+ *   * LATCH_PIN = GPIO 23
+ * - I2C DS3231 RTC:
+ *   * SDA = GPIO 21
+ *   * SCL = GPIO 22
+ * - Tactile Ack Button = GPIO 4 (INPUT_PULLUP)
+ * - Buzzer / Blue Status LED = GPIO 2
  *
- * 28-LED Mapping (7 Days x 4 Slots):
- * - Monday:    LED 1 (Morning), LED 2 (Noon), LED 3 (Evening), LED 4 (Night)   [Bits 0-3]
- * - Tuesday:   LED 5-8                                                        [Bits 4-7]
- * - Wednesday: LED 9-12                                                       [Bits 8-11]
- * - Thursday:  LED 13-16                                                      [Bits 12-15]
- * - Friday:    LED 17-20                                                      [Bits 16-19]
- * - Saturday:  LED 21-24                                                      [Bits 20-23]
- * - Sunday:    LED 25-28                                                      [Bits 24-27]
+ * 28-LED Mapping (7 Days x 4 Slots across 4 ICs):
+ * - IC 0 (Chip 1): Monday (LEDs 1-4, bits 0-3), Tuesday (LEDs 5-8, bits 4-7)
+ * - IC 1 (Chip 2): Wednesday (LEDs 9-12, bits 0-3), Thursday (LEDs 13-16, bits 4-7)
+ * - IC 2 (Chip 3): Friday (LEDs 17-20, bits 0-3), Saturday (LEDs 21-24, bits 4-7)
+ * - IC 3 (Chip 4): Sunday (LEDs 25-28, bits 0-3)
  *
- * Startup Test Sequence:
- * At boot, the ESP32 performs a progressive 7-day startup test:
- * Monday (all 4) -> Tuesday (all 4) -> Wednesday (all 4) -> ... -> Sunday (all 4)!
+ * Startup Sequence:
+ * On boot, ESP32 runs progressive 7-Day test: Monday -> Tuesday -> ... -> Sunday!
  */
 
 #include <WiFi.h>
@@ -35,9 +30,16 @@
 #include <RTClib.h>
 #include <Preferences.h>
 
-// Set to true only if your LEDs are wired Active-LOW (Anode to VCC, Cathode to 74HC595)
-// Default is false: Active-HIGH (Cathode to GND, Anode to 74HC595)
-const bool ACTIVE_LOW_LEDS = false;
+// Shift Register Pins (Exact mapping from your working manual test)
+#define DATA_PIN   19
+#define CLOCK_PIN  18
+#define LATCH_PIN  23
+
+#define NUM_IC     4
+#define NUM_LEDS   28
+
+#define PIN_ACK_BUTTON 4
+#define PIN_BUZZER     2 // Also onboard blue LED for visual alert feedback
 
 // Wi-Fi Credentials
 const char* WIFI_SSID     = "Sarthak_Raut";
@@ -47,18 +49,12 @@ const char* WIFI_PASSWORD = "qwertyuiop";
 const char* FIREBASE_HOST       = "ldam-cp-default-rtdb.firebaseio.com";
 const char* SCHEDULE_ENDPOINT   = "https://ldam-cp-default-rtdb.firebaseio.com/weeklySchedule.json";
 const char* ACTIVE_LED_ENDPOINT = "https://ldam-cp-default-rtdb.firebaseio.com/deviceSyncStatus/activeLed.json";
-const char* TELEMETRY_ENDPOINT  = "https://ldam-cp-default-rtdb.firebaseio.com/deviceSyncStatus.json";
-
-// Pin Definitions
-#define PIN_74HC595_DATA   23
-#define PIN_74HC595_CLOCK  18
-#define PIN_74HC595_LATCH  5
-#define PIN_ACK_BUTTON     4
-#define PIN_BUZZER         2  // Note: GPIO 2 is also the ESP32 onboard blue LED!
 
 RTC_DS3231 rtc;
 Preferences preferences;
 WiFiClientSecure secureClient;
+
+byte ledData[NUM_IC];
 
 // Memory structure for 28 slots
 struct SlotSchedule {
@@ -76,17 +72,6 @@ int activeLedIndex = -1; // -1 means all LEDs off
 unsigned long alarmStartTime = 0;
 const unsigned long ALARM_TIMEOUT_MS = 45 * 60 * 1000UL; // 45 minutes timeout
 
-// 7-Day Bitmask Definitions (4 slots each day)
-const uint32_t DAY_MASKS[7] = {
-  0x0000000F, // Monday:    Bits 0-3   (LEDs 1, 2, 3, 4)
-  0x000000F0, // Tuesday:   Bits 4-7   (LEDs 5, 6, 7, 8)
-  0x00000F00, // Wednesday: Bits 8-11  (LEDs 9, 10, 11, 12)
-  0x0000F000, // Thursday:  Bits 12-15 (LEDs 13, 14, 15, 16)
-  0x000F0000, // Friday:    Bits 16-19 (LEDs 17, 18, 19, 20)
-  0x00F00000, // Saturday:  Bits 20-23 (LEDs 21, 22, 23, 24)
-  0x0F000000  // Sunday:    Bits 24-27 (LEDs 25, 26, 27, 28)
-};
-
 const char* DAY_NAMES[7] = {
   "Monday    (LEDs 1-4:  Morning, Noon, Evening, Night)",
   "Tuesday   (LEDs 5-8:  Morning, Noon, Evening, Night)",
@@ -97,51 +82,61 @@ const char* DAY_NAMES[7] = {
   "Sunday    (LEDs 25-28: Morning, Noon, Evening, Night)"
 };
 
-// Shift 32 bits to 4x 74HC595 shift registers with clean microsecond clock pulses
-void updateShiftRegisters(uint32_t bitmask) {
-  if (ACTIVE_LOW_LEDS) {
-    bitmask = ~bitmask;
+// Shift 4 bytes out to 74HC595 chips (MSB first through all cascaded chips)
+void updateRegisters() {
+  digitalWrite(LATCH_PIN, LOW);
+
+  for (int i = NUM_IC - 1; i >= 0; i--) {
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, ledData[i]);
   }
 
-  digitalWrite(PIN_74HC595_LATCH, LOW);
-  delayMicroseconds(5);
-
-  // Shift out 4 bytes (MSB first through all 4 cascaded chips: Register 4 down to Register 1)
-  for (int b = 3; b >= 0; b--) {
-    uint8_t byteVal = (bitmask >> (b * 8)) & 0xFF;
-    for (int i = 7; i >= 0; i--) {
-      digitalWrite(PIN_74HC595_CLOCK, LOW);
-      digitalWrite(PIN_74HC595_DATA, (byteVal & (1 << i)) ? HIGH : LOW);
-      delayMicroseconds(3);
-      digitalWrite(PIN_74HC595_CLOCK, HIGH);
-      delayMicroseconds(3);
-    }
-  }
-
-  digitalWrite(PIN_74HC595_CLOCK, LOW);
-  delayMicroseconds(5);
-  digitalWrite(PIN_74HC595_LATCH, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(PIN_74HC595_LATCH, LOW);
+  digitalWrite(LATCH_PIN, HIGH);
 }
 
-void turnOffAllLeds() {
-  activeLedIndex = -1;
-  updateShiftRegisters(0);
+void allOff() {
+  for (int i = 0; i < NUM_IC; i++) {
+    ledData[i] = 0;
+  }
+  updateRegisters();
   digitalWrite(PIN_BUZZER, LOW);
+  activeLedIndex = -1;
 }
 
-void activateLed(uint8_t ledId) {
-  if (ledId < 1 || ledId > 28) return;
-  activeLedIndex = ledId;
+void turnOnLED(int ledNumber) {
+  allOff();
+
+  if (ledNumber < 1 || ledNumber > NUM_LEDS) return;
+
+  int ic = (ledNumber - 1) / 8;
+  int bitPosition = (ledNumber - 1) % 8;
+
+  ledData[ic] = (1 << bitPosition);
+
+  updateRegisters();
+  activeLedIndex = ledNumber;
   alarmStartTime = millis();
-
-  // Bitmask: Bit (ledId - 1) is HIGH
-  uint32_t mask = (1UL << (ledId - 1));
-  updateShiftRegisters(mask);
 }
 
-// Progressive Day-by-Day test sequence: Monday -> Tuesday -> Wednesday -> ... -> Sunday
+// Turn on all 4 LEDs for a single day (0 = Mon, 1 = Tue ... 6 = Sun)
+void turnOnDay(int dayIndex) {
+  allOff();
+  if (dayIndex < 0 || dayIndex > 6) return;
+
+  int ic = dayIndex / 2;                  // 0 for Mon/Tue, 1 for Wed/Thu, 2 for Fri/Sat, 3 for Sun
+  bool isUpperHalf = (dayIndex % 2 == 1); // false for Mon, Wed, Fri, Sun; true for Tue, Thu, Sat
+
+  if (isUpperHalf) {
+    ledData[ic] = 0xF0; // upper 4 bits
+  } else {
+    ledData[ic] = 0x0F; // lower 4 bits
+  }
+
+  updateRegisters();
+  activeLedIndex = 30 + dayIndex;
+  alarmStartTime = millis();
+}
+
+// Progressive 7-Day startup test sequence
 void runDayByDayStartupTest() {
   Serial.println("\n==============================================================");
   Serial.println("  [STARTUP TEST] Progressive 7-Day LED Sequence Starting");
@@ -150,13 +145,13 @@ void runDayByDayStartupTest() {
 
   for (int day = 0; day < 7; day++) {
     Serial.printf("[TEST DAY %d/7] Lighting %s\n", day + 1, DAY_NAMES[day]);
-    updateShiftRegisters(DAY_MASKS[day]);
+    turnOnDay(day);
     digitalWrite(PIN_BUZZER, HIGH);
-    delay(800); // Display each day for 800ms
+    delay(800);
     digitalWrite(PIN_BUZZER, LOW);
   }
 
-  turnOffAllLeds();
+  allOff();
   Serial.println("==============================================================");
   Serial.println("  [STARTUP TEST] Complete! All LEDs turned OFF.");
   Serial.println("==============================================================\n");
@@ -169,21 +164,27 @@ void setup() {
   Serial.println("  SmartDose IoT Dispenser — ESP32 Starting Up");
   Serial.println("==============================================");
 
-  Wire.begin(21, 22); // I2C SDA=21, SCL=22
-
-  pinMode(PIN_74HC595_DATA, OUTPUT);
-  pinMode(PIN_74HC595_CLOCK, OUTPUT);
-  pinMode(PIN_74HC595_LATCH, OUTPUT);
+  // Configure Shift Register Pins
+  pinMode(DATA_PIN, OUTPUT);
+  pinMode(CLOCK_PIN, OUTPUT);
+  pinMode(LATCH_PIN, OUTPUT);
   pinMode(PIN_ACK_BUTTON, INPUT_PULLUP);
   pinMode(PIN_BUZZER, OUTPUT);
 
-  // Run the progressive 7-Day startup test sequence immediately on boot
+  digitalWrite(DATA_PIN, LOW);
+  digitalWrite(CLOCK_PIN, LOW);
+  digitalWrite(LATCH_PIN, LOW);
+
+  allOff();
+
+  // Run the progressive 7-Day startup test immediately on boot
   runDayByDayStartupTest();
 
   // Configure Secure Client (bypasses SSL cert chain validation for Firebase)
   secureClient.setInsecure();
 
   // Initialize DS3231 RTC
+  Wire.begin(21, 22); // I2C SDA=21, SCL=22
   if (!rtc.begin()) {
     Serial.println("[WARN] DS3231 RTC not detected on I2C bus (check SDA=21, SCL=22).");
   } else {
@@ -277,7 +278,7 @@ void pollLiveDemoLed() {
     if (payload == "null" || payload == "0" || payload == "") {
       if (activeLedIndex != -1) {
         Serial.println("[DEMO] Web command: Turn OFF all LEDs");
-        turnOffAllLeds();
+        allOff();
       }
     } else {
       DynamicJsonDocument doc(256);
@@ -302,7 +303,7 @@ void pollLiveDemoLed() {
       if (targetLed >= 1 && targetLed <= 28) {
         if (activeLedIndex != targetLed) {
           Serial.printf("[DEMO SUCCESS] >>> Web command: Turn ON LED #%d <<<\n", targetLed);
-          activateLed(targetLed);
+          turnOnLED(targetLed);
         }
       }
       // 30 to 36: Turn on entire Day (30 = Mon, 31 = Tue ... 36 = Sun)
@@ -310,9 +311,7 @@ void pollLiveDemoLed() {
         int d = targetLed - 30;
         if (activeLedIndex != targetLed) {
           Serial.printf("[DEMO SUCCESS] >>> Web command: Lighting entire %s <<<\n", DAY_NAMES[d]);
-          activeLedIndex = targetLed;
-          alarmStartTime = millis();
-          updateShiftRegisters(DAY_MASKS[d]);
+          turnOnDay(d);
         }
       }
       // 99: Run the full 7-day animation sequence
@@ -323,7 +322,7 @@ void pollLiveDemoLed() {
       // 0: Turn off
       else if (targetLed == 0 && activeLedIndex != -1) {
         Serial.println("[DEMO] Web command: Turn OFF all LEDs");
-        turnOffAllLeds();
+        allOff();
       }
     }
   } else if (httpCode == 401 || httpCode == 403) {
@@ -339,7 +338,7 @@ void loop() {
     if (digitalRead(PIN_ACK_BUTTON) == LOW) {
       if (activeLedIndex != -1) {
         Serial.printf("[BUTTON] Acknowledged active LED #%d\n", activeLedIndex);
-        turnOffAllLeds();
+        allOff();
       } else {
         // When no LED is active, pressing the physical button triggers the 7-day sequence!
         Serial.println("[BUTTON] Manual Test Triggered! Running 7-day LED sequence...");
@@ -367,7 +366,7 @@ void loop() {
     // Check timeout
     if (millis() - alarmStartTime > ALARM_TIMEOUT_MS) {
       Serial.printf("[TIMEOUT] Alarm for LED #%d timed out after 45m.\n", activeLedIndex);
-      turnOffAllLeds();
+      allOff();
     }
   }
 
@@ -389,7 +388,7 @@ void loop() {
 
           Serial.printf("[ALARM] Scheduled LED #%d triggered at %02d:%02d\n",
             scheduleTable[i].ledId, now.hour(), now.minute());
-          activateLed(scheduleTable[i].ledId);
+          turnOnLED(scheduleTable[i].ledId);
           break;
         }
       }
