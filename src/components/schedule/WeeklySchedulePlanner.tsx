@@ -237,7 +237,8 @@ export const WeeklySchedulePlanner: React.FC = () => {
                   const ledId = getLedId(day, slot);
                   const hardware = getLedDetails(day, slot);
                   const isEnabled = Boolean(slotData?.enabled);
-                  const isLedActiveOnDevice = deviceStatus.activeLed === ledId;
+                  const activeLeds = deviceStatus.activeLeds || (deviceStatus.activeLed ? [deviceStatus.activeLed] : []);
+                  const isLedActiveOnDevice = activeLeds.includes(ledId);
                   const meta = SLOT_LABELS[slot];
 
                   return (
@@ -307,7 +308,7 @@ export const WeeklySchedulePlanner: React.FC = () => {
                       <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] gap-2">
                         <button
                           type="button"
-                          onClick={() => toggleSimulatedActiveLed(isLedActiveOnDevice ? null : ledId)}
+                          onClick={() => toggleSimulatedActiveLed(ledId)}
                           className={`px-2 py-1 rounded-lg font-bold transition-all flex items-center gap-1 ${
                             isLedActiveOnDevice
                               ? 'bg-rose-500 text-white shadow-xs animate-pulse'

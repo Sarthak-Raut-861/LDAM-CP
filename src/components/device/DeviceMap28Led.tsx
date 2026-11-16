@@ -22,23 +22,16 @@ export const DeviceMap28Led: React.FC = () => {
   const { schedule, deviceStatus, toggleSimulatedActiveLed, settings, reminders, syncScheduleToDevice } = useApp();
   const [syncing, setSyncing] = useState(false);
 
-  const activeLed = deviceStatus.activeLed;
-  const shiftBytes = calculateShiftRegisterBytes(activeLed);
-
-  const activeLedInfo = activeLed
-    ? {
-        ledId: activeLed,
-        shiftRegister: Math.floor((activeLed - 1) / 8) + 1,
-        pinIndex: (activeLed - 1) % 8,
-      }
-    : null;
+  const activeLeds = deviceStatus.activeLeds || (deviceStatus.activeLed ? [deviceStatus.activeLed] : []);
+  const hasActiveLeds = activeLeds.length > 0;
+  const shiftBytes = calculateShiftRegisterBytes(activeLeds);
 
   return (
     <div className="space-y-6">
       {/* Interactive ESP32 DevKit V1 Live Hardware Board */}
       <div className="bg-slate-950 text-white rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl relative overflow-hidden">
         {/* Glow backdrop */}
-        {activeLed && (
+        {hasActiveLeds && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
         )}
 
@@ -51,9 +44,9 @@ export const DeviceMap28Led: React.FC = () => {
               <div>
                 <h3 className="font-bold text-sm text-white flex items-center gap-2">
                   ESP32 DevKit V1 Hardware Board
-                  {activeLed ? (
+                  {hasActiveLeds ? (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500 text-white animate-pulse">
-                      LED #{activeLed} ACTIVE
+                      {activeLeds.length === 1 ? `LED #${activeLeds[0]} ACTIVE` : `${activeLeds.length} LEDs ACTIVE`}
                     </span>
                   ) : (
                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
@@ -82,14 +75,14 @@ export const DeviceMap28Led: React.FC = () => {
                 <span>{syncing ? 'Syncing...' : 'Sync to ESP32'}</span>
               </button>
 
-              {activeLed ? (
+              {hasActiveLeds ? (
                 <button
                   type="button"
                   onClick={() => toggleSimulatedActiveLed(null)}
                   className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
                 >
                   <Power className="w-3.5 h-3.5" />
-                  Turn Off LED #{activeLed}
+                  Turn Off All ({activeLeds.length} Active)
                 </button>
               ) : (
                 <button
@@ -120,8 +113,8 @@ export const DeviceMap28Led: React.FC = () => {
 
               <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-2 border-t border-slate-800/80">
                 <span>GPIO 23 (DATA)</span>
-                <span className={activeLed ? 'text-teal-400 font-bold' : 'text-slate-600'}>
-                  {activeLed ? 'SIGNAL HIGH' : 'LOW'}
+                <span className={hasActiveLeds ? 'text-teal-400 font-bold' : 'text-slate-600'}>
+                  {hasActiveLeds ? 'SIGNAL HIGH' : 'LOW'}
                 </span>
               </div>
             </div>
@@ -135,7 +128,7 @@ export const DeviceMap28Led: React.FC = () => {
 
               <div className="grid grid-cols-4 gap-1.5 my-2">
                 {[1, 2, 3, 4].map(regIdx => {
-                  const isRegActive = activeLedInfo?.shiftRegister === regIdx;
+                  const isRegActive = shiftBytes[regIdx - 1] > 0;
                   return (
                     <div
                       key={regIdx}
@@ -146,16 +139,16 @@ export const DeviceMap28Led: React.FC = () => {
                       }`}
                     >
                       <div className="text-[9px]">SR#{regIdx}</div>
-                      <div className="font-mono text-[10px]">74HC595</div>
+                      <div className="font-mono text-[10px]">{isRegActive ? `0x${shiftBytes[regIdx - 1].toString(16).toUpperCase().padStart(2, '0')}` : '74HC595'}</div>
                     </div>
                   );
                 })}
               </div>
 
               <div className="text-[11px] text-slate-400 font-mono pt-1">
-                {activeLedInfo ? (
-                  <span className="text-amber-400 font-bold">
-                    SR #{activeLedInfo.shiftRegister} &bull; Output Pin Q{activeLedInfo.pinIndex} (HIGH)
+                {hasActiveLeds ? (
+                  <span className="text-amber-400 font-bold truncate block">
+                    Active: #{activeLeds.join(', #')} ({activeLeds.length} Lit)
                   </span>
                 ) : (
                   <span>All Shift Register Bits = 0</span>
@@ -172,15 +165,15 @@ export const DeviceMap28Led: React.FC = () => {
               <div className="my-2 flex flex-col items-center justify-center">
                 <div
                   className={`w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center ${
-                    activeLed
+                    hasActiveLeds
                       ? 'bg-rose-500 border-rose-300 shadow-glow-red animate-led-blink'
                       : 'bg-slate-800 border-slate-700 text-slate-600'
                   }`}
                 >
-                  <Power className={`w-5 h-5 ${activeLed ? 'text-white' : 'text-slate-600'}`} />
+                  <Power className={`w-5 h-5 ${hasActiveLeds ? 'text-white' : 'text-slate-600'}`} />
                 </div>
                 <span className="font-mono text-xs font-bold mt-1.5 text-white">
-                  {activeLed ? `Physical LED #${activeLed} ON` : 'All LEDs Standby'}
+                  {hasActiveLeds ? `${activeLeds.length} Physical LED${activeLeds.length === 1 ? '' : 's'} ON` : 'All LEDs Standby'}
                 </span>
               </div>
 
@@ -251,14 +244,14 @@ export const DeviceMap28Led: React.FC = () => {
                     const slotKey = `${day}_${slot}`;
                     const slotData = schedule.slots[slotKey];
                     const isEnabled = Boolean(slotData?.enabled);
-                    const isLit = activeLed === ledId;
+                    const isLit = activeLeds.includes(ledId);
                     const slotTime = slotData?.reminderTime || (slot === 'morning' ? '08:00' : slot === 'noon' ? '13:00' : slot === 'evening' ? '18:30' : '21:30');
 
                     return (
                       <button
                         key={day}
                         type="button"
-                        onClick={() => toggleSimulatedActiveLed(isLit ? null : ledId)}
+                        onClick={() => toggleSimulatedActiveLed(ledId)}
                         className={`p-2 rounded-xl border text-center transition-all flex flex-col items-center justify-between min-h-[72px] ${
                           isLit
                             ? 'bg-rose-50 dark:bg-rose-950/80 border-rose-500 shadow-glow-red ring-2 ring-rose-400 scale-102 z-10'

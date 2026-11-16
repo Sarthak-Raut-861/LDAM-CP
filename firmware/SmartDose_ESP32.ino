@@ -313,12 +313,29 @@ void pollLiveDemoLed() {
         allOff();
       }
     } else {
-      DynamicJsonDocument doc(256);
+      DynamicJsonDocument doc(512);
       DeserializationError err = deserializeJson(doc, payload);
 
       int targetLed = -1;
       if (!err) {
-        if (doc.is<int>()) {
+        if (doc.is<JsonArray>()) {
+          JsonArray arr = doc.as<JsonArray>();
+          for (int i = 0; i < NUM_IC; i++) ledData[i] = 0;
+          int count = 0;
+          for (JsonVariant v : arr) {
+            int led = v.as<int>();
+            if (led >= 1 && led <= 28) {
+              int ic = (led - 1) / 8;
+              int bitPos = (led - 1) % 8;
+              ledData[ic] |= (1 << bitPos);
+              count++;
+            }
+          }
+          updateRegisters();
+          activeLedIndex = (count > 0) ? 999 : -1;
+          alarmStartTime = millis();
+          Serial.printf("[DEMO SUCCESS] >>> Web command: Multi-LED active (%d LEDs ON) <<<\n", count);
+        } else if (doc.is<int>()) {
           targetLed = doc.as<int>();
         } else if (doc.containsKey("activeLed")) {
           if (doc["activeLed"].isNull()) {

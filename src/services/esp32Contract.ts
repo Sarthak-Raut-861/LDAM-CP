@@ -84,19 +84,31 @@ export function formatScheduleForEsp32(schedule: WeeklySchedule): Esp32SyncPaylo
 
 /**
  * Calculates the 4 bytes shifted out to the four 74HC595 shift registers
- * for a specific active LED (1-28). Returns [byte1, byte2, byte3, byte4]
+ * for one or multiple active LEDs (1-28). Returns [byte1, byte2, byte3, byte4]
  */
-export function calculateShiftRegisterBytes(activeLedId: number | null): [number, number, number, number] {
+export function calculateShiftRegisterBytes(activeLedIds: number | number[] | null | undefined): [number, number, number, number] {
   const bytes: [number, number, number, number] = [0, 0, 0, 0];
-  if (!activeLedId || activeLedId < 1 || activeLedId > 28) {
+  if (!activeLedIds) {
     return bytes;
   }
 
-  const index = activeLedId - 1; // 0 to 27
-  const regIndex = Math.floor(index / 8); // 0 to 3
-  const bitPos = index % 8; // 0 to 7
+  const ids = Array.isArray(activeLedIds) ? activeLedIds : [activeLedIds];
 
-  bytes[regIndex] = 1 << bitPos;
+  ids.forEach(id => {
+    if (id >= 1 && id <= 28) {
+      const index = id - 1; // 0 to 27
+      const regIndex = Math.floor(index / 8); // 0 to 3
+      const bitPos = index % 8; // 0 to 7
+      bytes[regIndex] |= (1 << bitPos);
+    } else if (id >= 30 && id <= 36) {
+      // Day codes: 30 = Mon, 31 = Tue ... 36 = Sun
+      const dayIndex = id - 30;
+      const ic = Math.floor(dayIndex / 2);
+      const isUpper = (dayIndex % 2 === 1);
+      bytes[ic] |= isUpper ? 0xF0 : 0x0F;
+    }
+  });
+
   return bytes;
 }
 

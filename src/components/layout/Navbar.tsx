@@ -86,10 +86,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       <div className="flex items-center gap-4">
         {user ? (
           <>
-            {Boolean(deviceStatus.activeLed) && (
+            {Boolean(deviceStatus.activeLed || (deviceStatus.activeLeds && deviceStatus.activeLeds.length > 0)) && (
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-xs font-bold text-rose-300 animate-pulse shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-rose-500 shadow-glow-red" />
-                <span>LED #{deviceStatus.activeLed} ACTIVE</span>
+                <span>
+                  {deviceStatus.activeLeds && deviceStatus.activeLeds.length > 1
+                    ? `${deviceStatus.activeLeds.length} LEDs ACTIVE`
+                    : `LED #${deviceStatus.activeLed || deviceStatus.activeLeds?.[0]} ACTIVE`}
+                </span>
                 <button
                   onClick={() => toggleSimulatedActiveLed(null)}
                   className="ml-1 px-2 py-0.5 rounded-md bg-rose-900/80 text-rose-100 hover:bg-rose-800 text-[10px] font-semibold transition-colors"

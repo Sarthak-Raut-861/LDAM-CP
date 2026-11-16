@@ -160,6 +160,7 @@ export interface DeviceTelemetry {
   rtcTime: string;
   firmwareVersion: string;
   activeLed: number | null; // 1 to 28, or null
+  activeLeds?: number[]; // Array of all currently active LED IDs, e.g. [1, 5, 12]
   shiftRegistersCount: 4;
   ledsCount: 28;
   isSimulated: boolean; // explicitly tells user whether real device is sending packets

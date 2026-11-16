@@ -101,13 +101,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const activeLedRef = ref(database, 'deviceSyncStatus/activeLed');
       const unsubscribe = onValue(activeLedRef, (snapshot) => {
         const val = snapshot.val();
-        const numericVal = typeof val === 'number' ? val : null;
+        let parsedActiveLeds: number[] = [];
+        let primaryActiveLed: number | null = null;
+
+        if (Array.isArray(val)) {
+          parsedActiveLeds = val.map(Number).filter(n => !isNaN(n));
+          primaryActiveLed = parsedActiveLeds.length > 0 ? parsedActiveLeds[parsedActiveLeds.length - 1] : null;
+        } else if (typeof val === 'number') {
+          primaryActiveLed = val;
+          parsedActiveLeds = [val];
+        } else {
+          primaryActiveLed = null;
+          parsedActiveLeds = [];
+        }
         
         setDeviceStatus((prev) => {
-          if (prev.activeLed === numericVal) return prev;
           return {
             ...prev,
-            activeLed: numericVal,
+            activeLed: primaryActiveLed,
+            activeLeds: parsedActiveLeds,
             lastSeen: new Date().toISOString(),
           };
         });
@@ -313,41 +325,51 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       fetch('/api/esp32/active-led', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ledId: null }),
+        body: JSON.stringify({ ledId: null, activeLeds: [] }),
       }).catch(() => {});
       addToast({
         type: 'info',
-        title: 'LEDs Turned Off',
+        title: 'All LEDs Turned Off',
         message: 'All 28 shift register output channels set to LOW.',
         duration: 2500,
       });
     } else {
       storageService.simulateHardwareTrigger(ledId);
+      const updated = storageService.getDeviceStatus();
+      const currentList = updated.activeLeds || (updated.activeLed ? [updated.activeLed] : []);
+      const isNowActive = currentList.includes(ledId);
+
       // Send to server route for ESP32 polling
       fetch('/api/esp32/active-led', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ledId }),
+        body: JSON.stringify({ 
+          ledId: updated.activeLed,
+          activeLeds: currentList 
+        }),
       }).catch(() => {});
-      if (settings.soundAlerts) {
+
+      if (settings.soundAlerts && isNowActive) {
         soundFx.playAlert();
       }
       
       const dayNamesList = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      let title = `Physical Alert: LED #${ledId} Active!`;
-      let message = `Shift Register 74HC595 bit shifted & active on dispenser.`;
+      let title = isNowActive ? `LED #${ledId} Turned ON` : `LED #${ledId} Turned OFF`;
+      let message = isNowActive 
+        ? `${currentList.length} LED${currentList.length === 1 ? '' : 's'} active on dispenser hardware.`
+        : `LED #${ledId} turned off. ${currentList.length} LED${currentList.length === 1 ? '' : 's'} remaining active.`;
       
       if (ledId >= 30 && ledId <= 36) {
         const dName = dayNamesList[ledId - 30];
-        title = `Physical Alert: All 4 LEDs for ${dName} Active!`;
-        message = `All 4 compartment LEDs for ${dName} are now active.`;
+        title = `Physical Alert: ${dName} LEDs Toggled`;
+        message = `Compartment LEDs for ${dName} updated on dispenser.`;
       }
 
       addToast({
-        type: 'warning',
+        type: isNowActive ? 'warning' : 'info',
         title,
         message,
-        duration: 3500,
+        duration: 2500,
       });
     }
     setDeviceStatus(storageService.getDeviceStatus());

@@ -20,14 +20,12 @@ export const DispenserMatrix: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selectedDay, setSelectedDay] = useState<DayOfWeek | 'All'>('All');
 
-  const activeLed = deviceStatus.activeLed;
+  const activeLeds = deviceStatus.activeLeds || (deviceStatus.activeLed ? [deviceStatus.activeLed] : []);
 
   const isSlotActive = (ledId: number, day: DayOfWeek): boolean => {
-    if (activeLed === ledId) return true;
-    if (activeLed && activeLed >= 30 && activeLed <= 36) {
-      const activeDayIdx = activeLed - 30;
-      return DAYS_OF_WEEK.indexOf(day) === activeDayIdx;
-    }
+    if (activeLeds.includes(ledId)) return true;
+    const activeDayIdx = DAYS_OF_WEEK.indexOf(day);
+    if (activeLeds.includes(30 + activeDayIdx)) return true;
     return false;
   };
 
@@ -57,13 +55,13 @@ export const DispenserMatrix: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          {activeLed && (
+          {activeLeds.length > 0 && (
             <button
               onClick={() => toggleSimulatedActiveLed(null)}
               className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 animate-pulse"
             >
               <Power className="w-3.5 h-3.5" />
-              Turn Off All LEDs
+              Turn Off All ({activeLeds.length} Active)
             </button>
           )}
 
@@ -110,7 +108,8 @@ export const DispenserMatrix: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
             {daysToShow.map((day) => {
               const dayIndex = DAYS_OF_WEEK.indexOf(day);
-              const isDayActive = activeLed === (30 + dayIndex);
+              const dayLeds = [dayIndex * 4 + 1, dayIndex * 4 + 2, dayIndex * 4 + 3, dayIndex * 4 + 4];
+              const isDayActive = activeLeds.includes(30 + dayIndex) || dayLeds.every(id => activeLeds.includes(id));
 
               return (
                 <div 
@@ -127,13 +126,13 @@ export const DispenserMatrix: React.FC = () => {
                       {day.slice(0, 3)}
                     </span>
                     <button
-                      onClick={() => toggleSimulatedActiveLed(isDayActive ? null : (30 + dayIndex))}
+                      onClick={() => toggleSimulatedActiveLed(30 + dayIndex)}
                       className={`text-[10px] px-1.5 py-0.5 rounded font-semibold transition-colors ${
                         isDayActive
                           ? 'bg-rose-500 text-white'
                           : 'text-slate-400 hover:text-teal-600 dark:hover:text-teal-400'
                       }`}
-                      title={`Turn on all 4 LEDs for ${day}`}
+                      title={`Turn on/off all 4 LEDs for ${day}`}
                     >
                       {isDayActive ? 'All ON' : 'Light 4'}
                     </button>
@@ -151,7 +150,7 @@ export const DispenserMatrix: React.FC = () => {
                       return (
                         <button
                           key={slot}
-                          onClick={() => toggleSimulatedActiveLed(active ? null : ledId)}
+                          onClick={() => toggleSimulatedActiveLed(ledId)}
                           className={`w-full p-2 rounded-lg border text-left transition-all flex items-center justify-between ${
                             active
                               ? 'bg-rose-500 text-white border-rose-600 shadow-glow-red animate-pulse'

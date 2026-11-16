@@ -84,7 +84,8 @@ export const TodaySlotsCard: React.FC = () => {
             r => r.dayOfWeek === todayDay && r.slot === slot && (r.date === todayDateStr || !r.date)
           );
 
-          const isLedActive = deviceStatus.activeLed === ledId;
+          const activeLeds = deviceStatus.activeLeds || (deviceStatus.activeLed ? [deviceStatus.activeLed] : []);
+          const isLedActive = activeLeds.includes(ledId);
           const isEnabled = Boolean(slotData?.enabled);
           const isAcknowledged = matchingReminder?.status === 'acknowledged';
 
@@ -160,7 +161,7 @@ export const TodaySlotsCard: React.FC = () => {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => toggleSimulatedActiveLed(isLedActive ? null : ledId)}
+                  onClick={() => toggleSimulatedActiveLed(ledId)}
                   className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                     isLedActive
                       ? 'bg-rose-600 text-white shadow-sm hover:bg-rose-700 animate-pulse'

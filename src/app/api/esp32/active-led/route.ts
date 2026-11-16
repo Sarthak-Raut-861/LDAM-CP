@@ -40,19 +40,28 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { ledId } = body;
+    const { ledId, activeLeds } = body;
 
-    if (ledId === null || ledId === 0 || ledId === undefined) {
+    let payloadToFirebase: any = null;
+
+    if (Array.isArray(activeLeds) && activeLeds.length > 0) {
+      currentActiveLed = activeLeds[activeLeds.length - 1];
+      payloadToFirebase = activeLeds.length === 1 ? activeLeds[0] : activeLeds;
+      lastActivatedAt = new Date().toISOString();
+    } else if (ledId === null || ledId === 0 || ledId === undefined) {
       currentActiveLed = null;
+      payloadToFirebase = null;
       lastActivatedAt = null;
     } else {
       const id = Number(ledId);
       // Valid IDs: 1-28 (individual slots), 30-36 (entire days: 30=Mon ... 36=Sun), 99 (7-day sequence)
       if ((id >= 1 && id <= 28) || (id >= 30 && id <= 36) || id === 99) {
         currentActiveLed = id;
+        payloadToFirebase = id;
         lastActivatedAt = new Date().toISOString();
       } else {
         currentActiveLed = null;
+        payloadToFirebase = null;
       }
     }
 
@@ -62,13 +71,14 @@ export async function POST(request: Request) {
         fetch(`${RTDB_URL}/deviceSyncStatus/activeLed.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(currentActiveLed),
+          body: JSON.stringify(payloadToFirebase),
         }),
         fetch(`${RTDB_URL}/deviceSyncStatus.json`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             activeLed: currentActiveLed,
+            activeLeds: Array.isArray(activeLeds) ? activeLeds : (currentActiveLed ? [currentActiveLed] : []),
             lastSeen: new Date().toISOString(),
           }),
         }),
@@ -80,6 +90,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       activeLed: currentActiveLed,
+      activeLeds: Array.isArray(activeLeds) ? activeLeds : (currentActiveLed ? [currentActiveLed] : []),
       lastActivatedAt,
       shiftRegister: currentActiveLed ? Math.floor((currentActiveLed - 1) / 8) + 1 : null,
       bitIndex: currentActiveLed ? (currentActiveLed - 1) % 8 : null,

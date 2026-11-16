@@ -368,7 +368,10 @@ class StorageService {
       localStorage.setItem(KEYS.DEVICE, JSON.stringify(status));
       if (isRealFirebaseConfigured && database) {
         set(ref(database, 'deviceSyncStatus'), status).catch(console.error);
-        set(ref(database, 'deviceSyncStatus/activeLed'), status.activeLed).catch(console.error);
+        const payloadForActiveLed = (status.activeLeds && status.activeLeds.length > 1)
+          ? status.activeLeds
+          : (status.activeLeds && status.activeLeds.length === 1 ? status.activeLeds[0] : status.activeLed);
+        set(ref(database, 'deviceSyncStatus/activeLed'), payloadForActiveLed).catch(console.error);
       }
     } catch (err) {
       console.error('Failed to save device status', err);
@@ -407,7 +410,17 @@ class StorageService {
 
   simulateHardwareTrigger(ledId: number): void {
     const device = this.getDeviceStatus();
-    device.activeLed = ledId;
+    let activeList = device.activeLeds ? [...device.activeLeds] : (device.activeLed ? [device.activeLed] : []);
+
+    if (activeList.includes(ledId)) {
+      activeList = activeList.filter(id => id !== ledId);
+    } else {
+      activeList.push(ledId);
+    }
+    activeList.sort((a, b) => a - b);
+
+    device.activeLeds = activeList;
+    device.activeLed = activeList.length > 0 ? activeList[activeList.length - 1] : null;
     device.lastSeen = new Date().toISOString();
     this.saveDeviceStatus(device);
   }
@@ -415,6 +428,7 @@ class StorageService {
   clearHardwareTrigger(): void {
     const device = this.getDeviceStatus();
     device.activeLed = null;
+    device.activeLeds = [];
     this.saveDeviceStatus(device);
   }
 
