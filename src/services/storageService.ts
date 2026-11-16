@@ -121,14 +121,23 @@ class StorageService {
       const stored = localStorage.getItem(KEYS.SCHEDULE);
       if (stored) {
         const parsed: WeeklySchedule = JSON.parse(stored);
-        // Ensure all 28 slots are configured
-        const hasUnconfiguredSlots = Object.values(parsed.slots).some(s => !s.enabled);
-        if (hasUnconfiguredSlots) {
-          const fullSched = createDefaultWeeklySchedule();
-          this.saveSchedule(fullSched, false);
-          return fullSched;
+        if (parsed && parsed.slots && typeof parsed.slots === 'object') {
+          const defaultSched = createDefaultWeeklySchedule();
+          let needsSave = false;
+
+          // Ensure every slot key exists in parsed.slots, while strictly respecting user's enabled/disabled states
+          Object.entries(defaultSched.slots).forEach(([key, defaultSlot]) => {
+            if (!parsed.slots[key]) {
+              parsed.slots[key] = defaultSlot;
+              needsSave = true;
+            }
+          });
+
+          if (needsSave) {
+            this.saveSchedule(parsed, false);
+          }
+          return parsed;
         }
-        return parsed;
       }
       const defaultSched = createDefaultWeeklySchedule();
       this.saveSchedule(defaultSched, false);

@@ -250,8 +250,7 @@ export const DeviceMap28Led: React.FC = () => {
                     const ledId = getLedId(day, slot);
                     const slotKey = `${day}_${slot}`;
                     const slotData = schedule.slots[slotKey];
-                    // Ensure all 28 compartment slots are fully configured
-                    const isEnabled = slotData?.enabled !== false;
+                    const isEnabled = Boolean(slotData?.enabled);
                     const isLit = activeLed === ledId;
                     const slotTime = slotData?.reminderTime || (slot === 'morning' ? '08:00' : slot === 'noon' ? '13:00' : slot === 'evening' ? '18:30' : '21:30');
 
